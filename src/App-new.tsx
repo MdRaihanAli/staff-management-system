@@ -16,7 +16,7 @@ const sampleStaffData: Staff[] = [
     designation: 'Front Desk Manager',
     visaType: 'Employment',
     cardNo: 'EMP001234',
-    issueDate: '2026-01-01',
+    issueDate: '2023-01-01',
     expireDate: '2025-01-01',
     phone: '+971-50-1234567',
     status: 'Working',
@@ -25,7 +25,7 @@ const sampleStaffData: Staff[] = [
     department: 'Front Desk',
     hotel: 'Grand Plaza Hotel',
     salary: 65000,
-    passportExpireDate: '2026-01-15'
+    hireDate: '2023-01-15'
   },
   {
     id: 2,
@@ -35,7 +35,7 @@ const sampleStaffData: Staff[] = [
     designation: 'Housekeeping Supervisor',
     visaType: 'Employment',
     cardNo: 'EMP001235',
-    issueDate: '2026-02-01',
+    issueDate: '2023-02-01',
     expireDate: '2025-02-01',
     phone: '+971-50-2345678',
     status: 'Working',
@@ -44,7 +44,7 @@ const sampleStaffData: Staff[] = [
     department: 'Housekeeping',
     hotel: 'Grand Plaza Hotel',
     salary: 45000,
-    passportExpireDate: '2026-02-15'
+    hireDate: '2023-02-15'
   },
   {
     id: 3,
@@ -54,7 +54,7 @@ const sampleStaffData: Staff[] = [
     designation: 'Chef',
     visaType: 'Employment',
     cardNo: 'EMP001236',
-    issueDate: '2026-03-01',
+    issueDate: '2023-03-01',
     expireDate: '2025-03-01',
     phone: '+971-50-3456789',
     status: 'Working',
@@ -63,7 +63,7 @@ const sampleStaffData: Staff[] = [
     department: 'Kitchen',
     hotel: 'Ocean View Resort',
     salary: 55000,
-    passportExpireDate: '2026-03-10'
+    hireDate: '2023-03-10'
   },
   {
     id: 4,
@@ -73,7 +73,7 @@ const sampleStaffData: Staff[] = [
     designation: 'Receptionist',
     visaType: 'Visit',
     cardNo: 'VIS001001',
-    issueDate: '2026-06-01',
+    issueDate: '2023-06-01',
     expireDate: '2024-06-01',
     phone: '+971-50-4567890',
     status: 'Jobless',
@@ -82,7 +82,7 @@ const sampleStaffData: Staff[] = [
     department: 'Reception',
     hotel: 'Ocean View Resort',
     salary: 35000,
-    passportExpireDate: '2026-06-15'
+    hireDate: '2023-06-15'
   },
   {
     id: 5,
@@ -92,7 +92,7 @@ const sampleStaffData: Staff[] = [
     designation: 'Security Guard',
     visaType: 'Employment',
     cardNo: 'EMP001237',
-    issueDate: '2026-04-01',
+    issueDate: '2023-04-01',
     expireDate: '2025-04-01',
     phone: '+971-50-5678901',
     status: 'Working',
@@ -101,7 +101,7 @@ const sampleStaffData: Staff[] = [
     department: 'Security',
     hotel: 'City Center Inn',
     salary: 30000,
-    passportExpireDate: '2026-04-20'
+    hireDate: '2023-04-20'
   },
   {
     id: 6,
@@ -111,7 +111,7 @@ const sampleStaffData: Staff[] = [
     designation: 'Maintenance Worker',
     visaType: 'Employment',
     cardNo: 'EMP001238',
-    issueDate: '2026-05-01',
+    issueDate: '2023-05-01',
     expireDate: '2025-05-01',
     phone: '+971-50-6789012',
     status: 'Working',
@@ -120,7 +120,7 @@ const sampleStaffData: Staff[] = [
     department: 'Maintenance',
     hotel: 'Mountain Lodge',
     salary: 32000,
-    passportExpireDate: '2026-05-10'
+    hireDate: '2023-05-10'
   },
   {
     id: 7,
@@ -130,7 +130,7 @@ const sampleStaffData: Staff[] = [
     designation: 'Waiter',
     visaType: 'Visit',
     cardNo: 'VIS001002',
-    issueDate: '2026-07-01',
+    issueDate: '2023-07-01',
     expireDate: '2024-01-01',
     phone: '+971-50-7890123',
     status: 'Exited',
@@ -139,7 +139,7 @@ const sampleStaffData: Staff[] = [
     department: 'Restaurant',
     hotel: 'Beach Paradise Hotel',
     salary: 25000,
-    passportExpireDate: '2026-07-15'
+    hireDate: '2023-07-15'
   },
   {
     id: 8,
@@ -149,7 +149,7 @@ const sampleStaffData: Staff[] = [
     designation: 'Lifeguard',
     visaType: 'Employment',
     cardNo: 'EMP001239',
-    issueDate: '2026-08-01',
+    issueDate: '2023-08-01',
     expireDate: '2025-08-01',
     phone: '+971-50-8901234',
     status: 'Working',
@@ -158,7 +158,7 @@ const sampleStaffData: Staff[] = [
     department: 'Maintenance',
     hotel: 'Beach Paradise Hotel',
     salary: 28000,
-    passportExpireDate: '2026-08-15'
+    hireDate: '2023-08-15'
   }
 ]
 

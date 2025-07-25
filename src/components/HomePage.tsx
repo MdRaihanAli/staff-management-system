@@ -11,13 +11,13 @@ interface Staff {
   issueDate: string
   expireDate: string
   phone: string
-  status: 'Working' | 'Jobless'
+  status: 'Working' | 'Jobless' | 'Exited'
   photo: string
   remark: string
   hotel: string
   department: string
   salary: number
-  hireDate: string
+  passportExpireDate: string
 }
 
 interface HomePageProps {
@@ -56,12 +56,13 @@ const HomePage: React.FC<HomePageProps> = ({ staff }) => {
   const totalStaff = staff.length
   const totalWorkingStaff = staff.filter(s => s.status === 'Working').length
   const totalJoblessStaff = staff.filter(s => s.status === 'Jobless').length
+  const totalExitedStaff = staff.filter(s => s.status === 'Exited').length
   const totalHotels = Object.keys(hotelStats).length
 
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Overall Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6">
         <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl p-4 sm:p-6 shadow-lg hover:shadow-xl transition-shadow">
           <div className="flex items-center justify-between">
             <div>
@@ -96,6 +97,15 @@ const HomePage: React.FC<HomePageProps> = ({ staff }) => {
               <p className="text-2xl sm:text-3xl font-bold">{totalJoblessStaff}</p>
             </div>
             <div className="text-2xl sm:text-3xl opacity-75">❌</div>
+          </div>
+        </div>
+        <div className="bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-xl p-4 sm:p-6 shadow-lg hover:shadow-xl transition-shadow">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm sm:text-lg font-semibold mb-1 sm:mb-2 opacity-90">Exited Staff</h3>
+              <p className="text-2xl sm:text-3xl font-bold">{totalExitedStaff}</p>
+            </div>
+            <div className="text-2xl sm:text-3xl opacity-75">🚪</div>
           </div>
         </div>
       </div>
