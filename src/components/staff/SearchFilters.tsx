@@ -10,6 +10,8 @@ interface SearchFiltersProps {
   setFilterVisa: (visa: string) => void
   filterExpireDate: string
   setFilterExpireDate: (date: string) => void
+  filterPassportExpireDate: string
+  setFilterPassportExpireDate: (date: string) => void
   hotels: string[]
   advancedSearch: boolean
   setAdvancedSearch: (advanced: boolean) => void
@@ -27,6 +29,8 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   setFilterVisa,
   filterExpireDate,
   setFilterExpireDate,
+  filterPassportExpireDate,
+  setFilterPassportExpireDate,
   hotels,
   advancedSearch,
   setAdvancedSearch,
@@ -58,7 +62,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
       </div>
       
       {/* Basic Search */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mb-4">
         <input
           type="text"
           placeholder="🔍 Search by name, phone, designation, batch..."
@@ -90,7 +94,17 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           onChange={(e) => setFilterExpireDate(e.target.value)}
           className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
         >
-          <option value="">⏰ All Status</option>
+          <option value="">⏰ Visa Status</option>
+          <option value="expired">🔴 Expired</option>
+          <option value="expiring">🟡 Expiring Soon (30 days)</option>
+          <option value="valid">🟢 Valid</option>
+        </select>
+        <select
+          value={filterPassportExpireDate}
+          onChange={(e) => setFilterPassportExpireDate(e.target.value)}
+          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+        >
+          <option value="">📅 Passport Status</option>
           <option value="expired">🔴 Expired</option>
           <option value="expiring">🟡 Expiring Soon (30 days)</option>
           <option value="valid">🟢 Valid</option>
@@ -101,7 +115,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
       {advancedSearch && (
         <div className="border-t border-gray-200 pt-4">
           <h3 className="text-sm font-semibold text-gray-700 mb-3">🔧 Advanced Filters</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <input
               type="text"
               placeholder="🏢 Department"
@@ -109,20 +123,15 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
               onChange={(e) => setSearchFilters({...searchFilters, department: e.target.value})}
               className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
             />
-            <input
-              type="number"
-              placeholder="💰 Min Salary"
-              value={searchFilters.salaryMin}
-              onChange={(e) => setSearchFilters({...searchFilters, salaryMin: e.target.value})}
+            <select
+              value={searchFilters.status}
+              onChange={(e) => setSearchFilters({...searchFilters, status: e.target.value})}
               className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-            />
-            <input
-              type="number"
-              placeholder="💰 Max Salary"
-              value={searchFilters.salaryMax}
-              onChange={(e) => setSearchFilters({...searchFilters, salaryMax: e.target.value})}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-            />
+            >
+              <option value="">👥 All Status</option>
+              <option value="Working">✅ Working</option>
+              <option value="Jobless">❌ Jobless</option>
+            </select>
             <input
               type="date"
               placeholder="📅 Passport Expire Date"

@@ -7,7 +7,8 @@ export const filterStaff = (
   filterHotel: string,
   filterExpireDate: string,
   searchFilters: SearchFilters,
-  showExitedStaff: boolean = false
+  showExitedStaff: boolean = false,
+  filterPassportExpireDate: string = ''
 ): Staff[] => {
   return staff.filter(person => {
     // Handle exited staff view
@@ -52,25 +53,43 @@ export const filterStaff = (
       }
     }
 
+    // Filter by passport expiry date
+    let matchesPassportExpireDate = true
+    if (filterPassportExpireDate) {
+      const passportExpireDate = person.passportExpireDate ? new Date(person.passportExpireDate) : null
+      const currentDate = new Date()
+      const thirtyDaysFromNow = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+      
+      switch (filterPassportExpireDate) {
+        case 'expired':
+          matchesPassportExpireDate = passportExpireDate ? passportExpireDate < currentDate : false
+          break
+        case 'expiring':
+          matchesPassportExpireDate = passportExpireDate ? (passportExpireDate >= currentDate && passportExpireDate <= thirtyDaysFromNow) : false
+          break
+        case 'valid':
+          matchesPassportExpireDate = passportExpireDate ? passportExpireDate > thirtyDaysFromNow : false
+          break
+        default:
+          matchesPassportExpireDate = true
+      }
+    }
+
     // Advanced search filters
     const matchesDepartment = searchFilters.department === '' || 
       person.department.toLowerCase().includes(searchFilters.department.toLowerCase())
     
-    const matchesSalaryMin = searchFilters.salaryMin === '' || 
-      person.salary >= parseInt(searchFilters.salaryMin)
-    
-    const matchesSalaryMax = searchFilters.salaryMax === '' || 
-      person.salary <= parseInt(searchFilters.salaryMax)
-    
-    const matchesPassportExpireDate = searchFilters.passportExpireDate === '' || 
+    const matchesAdvancedPassportExpireDate = searchFilters.passportExpireDate === '' || 
       person.passportExpireDate === searchFilters.passportExpireDate
     
     const matchesCardNumber = searchFilters.cardNumber === '' || 
       person.cardNo.toLowerCase().includes(searchFilters.cardNumber.toLowerCase())
     
+    const matchesAdvancedStatus = searchFilters.status === '' || person.status === searchFilters.status
+    
     return matchesSearch && matchesVisa && matchesHotel && matchesExpireDate &&
-           matchesDepartment && matchesSalaryMin && matchesSalaryMax && 
-           matchesPassportExpireDate && matchesCardNumber
+           matchesPassportExpireDate && matchesDepartment && matchesAdvancedPassportExpireDate && 
+           matchesCardNumber && matchesAdvancedStatus
   })
 }
 

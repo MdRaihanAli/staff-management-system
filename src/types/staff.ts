@@ -39,8 +39,6 @@ export interface NewStaff {
 
 export interface SearchFilters {
   department: string
-  salaryMin: string
-  salaryMax: string
   passportExpireDate: string
   cardNumber: string
 }

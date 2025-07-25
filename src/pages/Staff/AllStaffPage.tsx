@@ -25,6 +25,7 @@ const AllStaffPage: React.FC = () => {
   const [filterVisa, setFilterVisa] = useState('')
   const [filterHotel, setFilterHotel] = useState('')
   const [filterExpireDate, setFilterExpireDate] = useState('')
+  const [filterPassportExpireDate, setFilterPassportExpireDate] = useState('')
 
   const [newStaff, setNewStaff] = useState<NewStaff>({
     sl: 0,
@@ -56,10 +57,9 @@ const AllStaffPage: React.FC = () => {
   const [advancedSearch, setAdvancedSearch] = useState(false)
   const [searchFilters, setSearchFilters] = useState<SearchFiltersType>({
     department: '',
-    salaryMin: '',
-    salaryMax: '',
     passportExpireDate: '',
-    cardNumber: ''
+    cardNumber: '',
+    status: ''
   })
 
   // Helper functions
@@ -89,15 +89,6 @@ const AllStaffPage: React.FC = () => {
   const handleNewStaffUpdate = (field: string, value: string | number) => {
     if (field === 'batchNo') {
       setBatchError('') // Clear batch error when user starts typing
-      // Check for duplicates in real-time
-      if (value && typeof value === 'string') {
-        const duplicate = staff.find(s => 
-          s.batchNo.toLowerCase() === value.toLowerCase()
-        )
-        if (duplicate) {
-          setBatchError('Batch number already exists. Please use a unique batch number.')
-        }
-      }
     }
     setNewStaff({...newStaff, [field]: value})
   }
@@ -105,16 +96,6 @@ const AllStaffPage: React.FC = () => {
   const handleEditStaffUpdate = (field: string, value: string | number) => {
     if (field === 'batchNo') {
       setBatchError('') // Clear batch error when user starts typing
-      // Check for duplicates in real-time (excluding current staff)
-      if (value && typeof value === 'string' && editingStaff) {
-        const duplicate = staff.find(s => 
-          s.batchNo.toLowerCase() === value.toLowerCase() && 
-          s.id !== editingStaff.id
-        )
-        if (duplicate) {
-          setBatchError('Batch number already exists. Please use a unique batch number.')
-        }
-      }
     }
     setEditingStaff({...editingStaff, [field]: value})
   }
@@ -127,7 +108,8 @@ const AllStaffPage: React.FC = () => {
     filterHotel,
     filterExpireDate,
     searchFilters,
-    showExitedStaff
+    showExitedStaff,
+    filterPassportExpireDate
   )
 
   // Staff operations
@@ -369,6 +351,8 @@ const AllStaffPage: React.FC = () => {
               setFilterVisa={setFilterVisa}
               filterExpireDate={filterExpireDate}
               setFilterExpireDate={setFilterExpireDate}
+              filterPassportExpireDate={filterPassportExpireDate}
+              setFilterPassportExpireDate={setFilterPassportExpireDate}
               hotels={hotels}
               advancedSearch={advancedSearch}
               setAdvancedSearch={setAdvancedSearch}
@@ -559,7 +543,7 @@ const AllStaffPage: React.FC = () => {
               </div>
 
               <div className="bg-purple-50 rounded-lg p-4">
-                <h3 className="text-lg font-semibold text-purple-900 mb-3">Visa Information</h3>
+                <h3 className="text-lg font-semibold text-purple-900 mb-3">🛂 Visa & Passport Information</h3>
                 <div className="space-y-3">
                   <div>
                     <span className="text-gray-600 text-sm">Visa Type:</span>
@@ -570,12 +554,16 @@ const AllStaffPage: React.FC = () => {
                     <p className="font-semibold text-gray-900">{viewingStaff.cardNo || 'Not specified'}</p>
                   </div>
                   <div>
-                    <span className="text-gray-600 text-sm">Issue Date:</span>
+                    <span className="text-gray-600 text-sm">Visa Issue Date:</span>
                     <p className="font-semibold text-gray-900">{viewingStaff.issueDate ? new Date(viewingStaff.issueDate).toLocaleDateString() : 'Not specified'}</p>
                   </div>
                   <div>
-                    <span className="text-gray-600 text-sm">Expire Date:</span>
+                    <span className="text-gray-600 text-sm">Visa Expire Date:</span>
                     <p className="font-semibold text-gray-900">{viewingStaff.expireDate ? new Date(viewingStaff.expireDate).toLocaleDateString() : 'Not specified'}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-600 text-sm">Passport Expire Date:</span>
+                    <p className="font-semibold text-gray-900">{viewingStaff.passportExpireDate ? new Date(viewingStaff.passportExpireDate).toLocaleDateString() : 'Not specified'}</p>
                   </div>
                 </div>
               </div>

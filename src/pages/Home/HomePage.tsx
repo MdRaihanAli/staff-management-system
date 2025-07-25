@@ -51,7 +51,19 @@ const HomePage: React.FC<HomePageProps> = ({ staff }) => {
     return { expired, expiringSoon }
   }
 
+  // Get passport expiry alerts
+  const getPassportExpiryAlerts = () => {
+    const currentDate = new Date()
+    const thirtyDaysFromNow = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+    
+    const passportExpired = staff.filter(s => s.passportExpireDate && new Date(s.passportExpireDate) < currentDate)
+    const passportExpiringSoon = staff.filter(s => s.passportExpireDate && new Date(s.passportExpireDate) >= currentDate && new Date(s.passportExpireDate) <= thirtyDaysFromNow)
+    
+    return { passportExpired, passportExpiringSoon }
+  }
+
   const { expired, expiringSoon } = getExpiryAlerts()
+  const { passportExpired, passportExpiringSoon } = getPassportExpiryAlerts()
 
   return (
     <div className="space-y-8">
@@ -137,9 +149,10 @@ const HomePage: React.FC<HomePageProps> = ({ staff }) => {
         <div className="bg-gradient-to-br from-orange-50 to-red-100 rounded-2xl shadow-xl p-8 border border-orange-200">
           <h2 className="text-2xl font-bold text-orange-900 mb-6 flex items-center">
             <span className="mr-3 text-3xl">⚠️</span>
-            Visa Expiry Alerts
+            Document Expiry Alerts
           </h2>
           <div className="space-y-4">
+            {/* Visa Expiry Alerts */}
             {expired.length > 0 && (
               <div className="bg-gradient-to-r from-red-500 to-red-600 border border-red-300 rounded-xl p-4 shadow-lg">
                 <div className="flex items-center justify-between">
@@ -155,14 +168,39 @@ const HomePage: React.FC<HomePageProps> = ({ staff }) => {
               <div className="bg-gradient-to-r from-yellow-400 to-orange-500 border border-yellow-300 rounded-xl p-4 shadow-lg">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
-                    <span className="text-white font-bold mr-3 text-lg">🟡 Expiring Soon</span>
+                    <span className="text-white font-bold mr-3 text-lg">🟡 Visas Expiring Soon</span>
                   </div>
                   <span className="text-2xl font-bold text-white bg-orange-600 px-3 py-1 rounded-full">{expiringSoon.length}</span>
                 </div>
                 <p className="text-yellow-100 text-sm mt-2">Action needed within 30 days</p>
               </div>
             )}
-            {expired.length === 0 && expiringSoon.length === 0 && (
+            
+            {/* Passport Expiry Alerts */}
+            {passportExpired.length > 0 && (
+              <div className="bg-gradient-to-r from-purple-500 to-purple-600 border border-purple-300 rounded-xl p-4 shadow-lg">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <span className="text-white font-bold mr-3 text-lg">📕 Expired Passports</span>
+                  </div>
+                  <span className="text-2xl font-bold text-white bg-purple-700 px-3 py-1 rounded-full">{passportExpired.length}</span>
+                </div>
+                <p className="text-purple-100 text-sm mt-2">Immediate attention required</p>
+              </div>
+            )}
+            {passportExpiringSoon.length > 0 && (
+              <div className="bg-gradient-to-r from-blue-400 to-indigo-500 border border-blue-300 rounded-xl p-4 shadow-lg">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <span className="text-white font-bold mr-3 text-lg">📘 Passports Expiring Soon</span>
+                  </div>
+                  <span className="text-2xl font-bold text-white bg-indigo-600 px-3 py-1 rounded-full">{passportExpiringSoon.length}</span>
+                </div>
+                <p className="text-blue-100 text-sm mt-2">Action needed within 30 days</p>
+              </div>
+            )}
+            
+            {expired.length === 0 && expiringSoon.length === 0 && passportExpired.length === 0 && passportExpiringSoon.length === 0 && (
               <div className="bg-gradient-to-r from-green-500 to-emerald-600 border border-green-300 rounded-xl p-4 shadow-lg">
                 <div className="flex items-center justify-center">
                   <span className="text-white font-bold mr-3 text-lg">🟢 All Clear</span>

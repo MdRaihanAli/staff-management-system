@@ -106,27 +106,65 @@ export const importFromJSON = (
       try {
         const data = JSON.parse(e.target?.result as string)
         if (Array.isArray(data)) {
-          const newStaff = data.map((item, index) => ({
-            id: Math.max(...currentStaff.map(s => s.id), 0) + index + 1,
-            sl: item.sl || Math.max(...currentStaff.map(s => s.sl), 0) + index + 1,
-            batchNo: item.batchNo || '',
-            name: item.name || '',
-            designation: item.designation || '',
-            visaType: item.visaType || '',
-            cardNo: item.cardNo || '',
-            issueDate: item.issueDate || '',
-            expireDate: item.expireDate || '',
-            phone: item.phone || '',
-            status: item.status || 'Working',
-            photo: item.photo || '',
-            remark: item.remark || '',
-            hotel: item.hotel || '',
-            department: item.department || '',
-            salary: item.salary || 0,
-            passportExpireDate: item.passportExpireDate || ''
-          }))
-          setStaff([...currentStaff, ...newStaff])
-          alert(`Successfully imported ${newStaff.length} staff members!`)
+          // Check for batch number duplicates before importing
+          const existingBatchNumbers = currentStaff
+            .filter(s => s.batchNo && s.batchNo.trim() !== '')
+            .map(s => s.batchNo.toLowerCase())
+          
+          const duplicateBatches: string[] = []
+          const validStaff: any[] = []
+          
+          data.forEach((item) => {
+            const batchNo = (item.batchNo || '').trim()
+            if (batchNo !== '') {
+              const lowerBatch = batchNo.toLowerCase()
+              if (existingBatchNumbers.includes(lowerBatch) || 
+                  validStaff.some(s => s.batchNo.toLowerCase() === lowerBatch)) {
+                duplicateBatches.push(batchNo)
+              } else {
+                validStaff.push(item)
+              }
+            } else {
+              validStaff.push(item) // Allow empty batch numbers
+            }
+          })
+          
+          if (duplicateBatches.length > 0) {
+            const duplicateList = duplicateBatches.join(', ')
+            if (validStaff.length > 0) {
+              const proceed = confirm(
+                `Warning: ${duplicateBatches.length} staff members have duplicate batch numbers and will be skipped:\n${duplicateList}\n\nDo you want to import the remaining ${validStaff.length} valid staff members?`
+              )
+              if (!proceed) return
+            } else {
+              alert(`Import failed: All ${duplicateBatches.length} staff members have duplicate batch numbers:\n${duplicateList}`)
+              return
+            }
+          }
+          
+          if (validStaff.length > 0) {
+            const newStaff = validStaff.map((item, index) => ({
+              id: Math.max(...currentStaff.map(s => s.id), 0) + index + 1,
+              sl: item.sl || Math.max(...currentStaff.map(s => s.sl), 0) + index + 1,
+              batchNo: item.batchNo || '',
+              name: item.name || '',
+              designation: item.designation || '',
+              visaType: item.visaType || '',
+              cardNo: item.cardNo || '',
+              issueDate: item.issueDate || '',
+              expireDate: item.expireDate || '',
+              phone: item.phone || '',
+              status: item.status || 'Working',
+              photo: item.photo || '',
+              remark: item.remark || '',
+              hotel: item.hotel || '',
+              department: item.department || '',
+              salary: item.salary || 0,
+              passportExpireDate: item.passportExpireDate || ''
+            }))
+            setStaff([...currentStaff, ...newStaff])
+            alert(`Successfully imported ${newStaff.length} staff members!${duplicateBatches.length > 0 ? ` (${duplicateBatches.length} duplicates skipped)` : ''}`)
+          }
         }
       } catch (error) {
         alert('Error importing JSON file. Please check the file format.')
@@ -152,28 +190,66 @@ export const importFromExcel = (
         const worksheet = workbook.Sheets[workbook.SheetNames[0]]
         const jsonData = XLSX.utils.sheet_to_json(worksheet)
         
-        const newStaff = jsonData.map((item: any, index) => ({
-          id: Math.max(...currentStaff.map(s => s.id), 0) + index + 1,
-          sl: item['SL'] || item.sl || Math.max(...currentStaff.map(s => s.sl), 0) + index + 1,
-          batchNo: item['Batch No'] || item.batchNo || '',
-          name: item['Name'] || item.name || '',
-          designation: item['Designation'] || item.designation || '',
-          visaType: item['Visa Type'] || item.visaType || '',
-          cardNo: item['Card No'] || item.cardNo || '',
-          issueDate: item['Issue Date'] || item.issueDate || '',
-          expireDate: item['Expire Date'] || item.expireDate || '',
-          phone: item['Phone'] || item.phone || '',
-          status: item['Status'] || item.status || 'Working',
-          photo: item['Photo'] || item.photo || '',
-          remark: item['Remark'] || item.remark || '',
-          hotel: item['Hotel'] || item.hotel || '',
-          department: item['Department'] || item.department || '',
-          salary: item['Salary'] || item.salary || 0,
-          passportExpireDate: item['Passport Expire Date'] || item.passportExpireDate || ''
-        }))
+        // Check for batch number duplicates before importing
+        const existingBatchNumbers = currentStaff
+          .filter(s => s.batchNo && s.batchNo.trim() !== '')
+          .map(s => s.batchNo.toLowerCase())
         
-        setStaff([...currentStaff, ...newStaff])
-        alert(`Successfully imported ${newStaff.length} staff members from Excel!`)
+        const duplicateBatches: string[] = []
+        const validStaff: any[] = []
+        
+        jsonData.forEach((item: any) => {
+          const batchNo = (item['Batch No'] || item.batchNo || '').toString().trim()
+          if (batchNo !== '') {
+            const lowerBatch = batchNo.toLowerCase()
+            if (existingBatchNumbers.includes(lowerBatch) || 
+                validStaff.some(s => s.extractedBatchNo.toLowerCase() === lowerBatch)) {
+              duplicateBatches.push(batchNo)
+            } else {
+              validStaff.push({...item, extractedBatchNo: batchNo})
+            }
+          } else {
+            validStaff.push({...item, extractedBatchNo: batchNo}) // Allow empty batch numbers
+          }
+        })
+        
+        if (duplicateBatches.length > 0) {
+          const duplicateList = duplicateBatches.join(', ')
+          if (validStaff.length > 0) {
+            const proceed = confirm(
+              `Warning: ${duplicateBatches.length} staff members have duplicate batch numbers and will be skipped:\n${duplicateList}\n\nDo you want to import the remaining ${validStaff.length} valid staff members?`
+            )
+            if (!proceed) return
+          } else {
+            alert(`Import failed: All ${duplicateBatches.length} staff members have duplicate batch numbers:\n${duplicateList}`)
+            return
+          }
+        }
+        
+        if (validStaff.length > 0) {
+          const newStaff = validStaff.map((item: any, index) => ({
+            id: Math.max(...currentStaff.map(s => s.id), 0) + index + 1,
+            sl: item['SL'] || item.sl || Math.max(...currentStaff.map(s => s.sl), 0) + index + 1,
+            batchNo: item.extractedBatchNo,
+            name: item['Name'] || item.name || '',
+            designation: item['Designation'] || item.designation || '',
+            visaType: item['Visa Type'] || item.visaType || '',
+            cardNo: item['Card No'] || item.cardNo || '',
+            issueDate: item['Issue Date'] || item.issueDate || '',
+            expireDate: item['Expire Date'] || item.expireDate || '',
+            phone: item['Phone'] || item.phone || '',
+            status: item['Status'] || item.status || 'Working',
+            photo: item['Photo'] || item.photo || '',
+            remark: item['Remark'] || item.remark || '',
+            hotel: item['Hotel'] || item.hotel || '',
+            department: item['Department'] || item.department || '',
+            salary: item['Salary'] || item.salary || 0,
+            passportExpireDate: item['Passport Expire Date'] || item.passportExpireDate || ''
+          }))
+          
+          setStaff([...currentStaff, ...newStaff])
+          alert(`Successfully imported ${newStaff.length} staff members from Excel!${duplicateBatches.length > 0 ? ` (${duplicateBatches.length} duplicates skipped)` : ''}`)
+        }
       } catch (error) {
         alert('Error importing Excel file. Please check the file format.')
       }
