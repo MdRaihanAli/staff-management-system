@@ -52,4 +52,7 @@ export interface StaffContextType {
   setHotels: React.Dispatch<React.SetStateAction<string[]>>
   departments: string[]
   setDepartments: React.Dispatch<React.SetStateAction<string[]>>
+  designations: string[]
+  setDesignations: React.Dispatch<React.SetStateAction<string[]>>
+  loadRealData: () => Promise<boolean>
 }

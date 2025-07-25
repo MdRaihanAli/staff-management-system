@@ -8,8 +8,11 @@ export const useStaffOperations = () => {
   const [batchError, setBatchError] = useState('')
 
   const addStaff = (newStaff: NewStaff) => {
-    // Check for duplicate batch number
-    const duplicateBatch = staff.find(s => s.batchNo === newStaff.batchNo && newStaff.batchNo !== '')
+    // Check for duplicate batch number (case-insensitive)
+    const duplicateBatch = staff.find(s => 
+      s.batchNo.toLowerCase() === newStaff.batchNo.toLowerCase() && 
+      newStaff.batchNo !== ''
+    )
     if (duplicateBatch) {
       setBatchError('Batch number already exists. Please use a unique batch number.')
       return false
@@ -34,7 +37,20 @@ export const useStaffOperations = () => {
   }
 
   const editStaff = (updatedStaff: Staff) => {
+    // Check for duplicate batch number (excluding the current staff member, case-insensitive)
+    const duplicateBatch = staff.find(s => 
+      s.batchNo.toLowerCase() === updatedStaff.batchNo.toLowerCase() && 
+      updatedStaff.batchNo !== '' && 
+      s.id !== updatedStaff.id
+    )
+    if (duplicateBatch) {
+      setBatchError('Batch number already exists. Please use a unique batch number.')
+      return false
+    }
+    setBatchError('')
+    
     setStaff(staff.map(s => s.id === updatedStaff.id ? updatedStaff : s))
+    return true
   }
 
   const deleteStaff = (id: number) => {

@@ -7,6 +7,7 @@ interface StaffFormProps {
   onSave: () => void
   onCancel: () => void
   hotels: string[]
+  designations?: string[]
   title: string
   isEdit?: boolean
   batchError?: string
@@ -18,6 +19,7 @@ const StaffForm: React.FC<StaffFormProps> = ({
   onSave,
   onCancel,
   hotels,
+  designations = [],
   title,
   isEdit = false,
   batchError
@@ -52,9 +54,15 @@ const StaffForm: React.FC<StaffFormProps> = ({
                   type="text"
                   value={staff.designation}
                   onChange={(e) => onUpdate('designation', e.target.value)}
+                  list="designations"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Job title"
                 />
+                <datalist id="designations">
+                  {designations.map((designation) => (
+                    <option key={designation} value={designation} />
+                  ))}
+                </datalist>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Batch No</label>
@@ -62,11 +70,18 @@ const StaffForm: React.FC<StaffFormProps> = ({
                   type="text"
                   value={staff.batchNo}
                   onChange={(e) => onUpdate('batchNo', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Batch number"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent ${
+                    batchError 
+                      ? 'border-red-500 focus:ring-red-500 bg-red-50' 
+                      : 'border-gray-300 focus:ring-blue-500'
+                  }`}
+                  placeholder="Batch number (unique)"
                 />
                 {batchError && (
-                  <p className="text-red-500 text-sm mt-1">{batchError}</p>
+                  <p className="text-red-500 text-sm mt-1 flex items-center">
+                    <span className="mr-1">⚠️</span>
+                    {batchError}
+                  </p>
                 )}
               </div>
               <div>
@@ -222,9 +237,14 @@ const StaffForm: React.FC<StaffFormProps> = ({
         <div className="flex flex-col sm:flex-row gap-3 mt-6 pt-6 border-t border-gray-200">
           <button
             onClick={onSave}
-            className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 font-medium shadow-lg"
+            disabled={!!batchError}
+            className={`flex-1 py-3 rounded-lg transition-all duration-200 font-medium shadow-lg ${
+              batchError 
+                ? 'bg-gray-400 text-gray-600 cursor-not-allowed' 
+                : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700'
+            }`}
           >
-            {isEdit ? '💾 Update Staff' : '➕ Add Staff'}
+            {batchError ? '🚫 Fix Batch Error First' : isEdit ? '💾 Update Staff' : '➕ Add Staff'}
           </button>
           <button
             onClick={onCancel}

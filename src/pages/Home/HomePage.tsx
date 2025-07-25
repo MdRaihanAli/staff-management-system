@@ -58,7 +58,7 @@ const HomePage: React.FC<HomePageProps> = ({ staff }) => {
       {/* Welcome Header */}
       
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl shadow-xl p-8 border border-blue-200 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
           <div className="flex items-center justify-between">
             <div>
@@ -98,20 +98,6 @@ const HomePage: React.FC<HomePageProps> = ({ staff }) => {
           </div>
           <div className="mt-4 bg-red-200 rounded-full h-2">
             <div className="bg-red-600 h-2 rounded-full" style={{width: stats.totalStaff > 0 ? `${(stats.joblessStaff / stats.totalStaff) * 100}%` : '0%'}}></div>
-          </div>
-        </div>
-        
-        <div className="bg-gradient-to-br from-gray-50 to-slate-100 rounded-2xl shadow-xl p-8 border border-gray-200 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Exited Staff</p>
-              <p className="text-4xl font-bold text-gray-900 mt-2">{stats.exitedStaff}</p>
-              <p className="text-sm text-gray-600 mt-1">Archived Records</p>
-            </div>
-            <div className="text-5xl text-gray-600 opacity-80">🚪</div>
-          </div>
-          <div className="mt-4 bg-gray-200 rounded-full h-2">
-            <div className="bg-gray-600 h-2 rounded-full" style={{width: '30%'}}></div>
           </div>
         </div>
       </div>
@@ -203,7 +189,6 @@ const HomePage: React.FC<HomePageProps> = ({ staff }) => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {Object.entries(hotelStats).map(([hotel, stats]) => {
-              const percentage = ((stats.total / staff.length) * 100).toFixed(1);
               const colorClasses = [
                 'from-blue-500 to-blue-600',
                 'from-green-500 to-green-600', 
@@ -233,38 +218,13 @@ const HomePage: React.FC<HomePageProps> = ({ staff }) => {
                       <span className="text-sm text-blue-100">Total Staff:</span>
                       <span className="font-medium text-white">{stats.total}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-blue-100">Working:</span>
-                      <span className="font-medium text-green-300">{stats.working}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-blue-100">Departments:</span>
-                      <span className="font-medium text-white">{stats.departments.size}</span>
-                    </div>
-                    
-                    {/* Progress bar for hotel distribution */}
-                    <div className="mt-4">
-                      <div className="flex justify-between text-xs text-blue-100 mb-1">
-                        <span>Distribution</span>
-                        <span>{percentage}%</span>
-                      </div>
-                      <div className="w-full bg-white/20 rounded-full h-2 overflow-hidden">
-                        <div 
-                          className={`h-full bg-gradient-to-r ${colorClass} rounded-full transition-all duration-500 ease-out`}
-                          style={{ width: `${percentage}%` }}
-                        >
-                          <div className="h-full bg-white/30 w-full animate-pulse"></div>
-                        </div>
-                      </div>
-                    </div>
                     
                     {Object.keys(stats.departmentCounts).length > 0 && (
                       <div className="mt-4 pt-3 border-t border-white/20">
-                        <p className="text-xs font-medium text-blue-100 mb-2">Top Departments:</p>
+                        <p className="text-xs font-medium text-blue-100 mb-2">All Departments:</p>
                         <div className="space-y-1">
                           {Object.entries(stats.departmentCounts)
                             .sort(([,a], [,b]) => b - a)
-                            .slice(0, 3)
                             .map(([dept, count]) => (
                               <div key={dept} className="flex justify-between text-xs">
                                 <span className="text-blue-100 truncate">{dept || 'Unassigned'}</span>

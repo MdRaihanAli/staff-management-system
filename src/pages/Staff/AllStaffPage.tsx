@@ -13,7 +13,7 @@ import StaffList from '../../components/staff/StaffList'
 import StaffForm from '../../components/staff/StaffForm'
 
 const AllStaffPage: React.FC = () => {
-  const { staff, setStaff, hotels, setHotels, departments, setDepartments } = useStaff()
+  const { staff, setStaff, hotels, setHotels, departments, setDepartments, designations, setDesignations } = useStaff()
   const { batchError, setBatchError, addStaff, editStaff, deleteStaff, addSampleData } = useStaffOperations()
   
   // State management
@@ -85,6 +85,40 @@ const AllStaffPage: React.FC = () => {
     setDepartments(departments.filter(dept => dept !== deptToRemove))
   }
 
+  // Helper functions to handle field updates with batch error clearing
+  const handleNewStaffUpdate = (field: string, value: string | number) => {
+    if (field === 'batchNo') {
+      setBatchError('') // Clear batch error when user starts typing
+      // Check for duplicates in real-time
+      if (value && typeof value === 'string') {
+        const duplicate = staff.find(s => 
+          s.batchNo.toLowerCase() === value.toLowerCase()
+        )
+        if (duplicate) {
+          setBatchError('Batch number already exists. Please use a unique batch number.')
+        }
+      }
+    }
+    setNewStaff({...newStaff, [field]: value})
+  }
+
+  const handleEditStaffUpdate = (field: string, value: string | number) => {
+    if (field === 'batchNo') {
+      setBatchError('') // Clear batch error when user starts typing
+      // Check for duplicates in real-time (excluding current staff)
+      if (value && typeof value === 'string' && editingStaff) {
+        const duplicate = staff.find(s => 
+          s.batchNo.toLowerCase() === value.toLowerCase() && 
+          s.id !== editingStaff.id
+        )
+        if (duplicate) {
+          setBatchError('Batch number already exists. Please use a unique batch number.')
+        }
+      }
+    }
+    setEditingStaff({...editingStaff, [field]: value})
+  }
+
   // Filter staff based on current view and search criteria
   const filteredStaff = filterStaff(
     staff,
@@ -122,8 +156,10 @@ const AllStaffPage: React.FC = () => {
   }
 
   const handleEditStaff = (updatedStaff: any) => {
-    editStaff(updatedStaff)
-    setEditingStaff(null)
+    if (editStaff(updatedStaff)) {
+      setEditingStaff(null)
+    }
+    // If editStaff returns false, keep the modal open to show batch error
   }
 
   // Bulk operations
@@ -303,9 +339,6 @@ const AllStaffPage: React.FC = () => {
             <div className="relative z-10">
               <StaffHeader 
                 staff={filteredStaff}
-                onAddStaff={() => setShowAddForm(true)}
-                onManage={() => setShowManageModal(true)}
-                onViewExited={() => setShowExitedStaff(true)}
               />
             </div>
           </div>
@@ -432,13 +465,14 @@ const AllStaffPage: React.FC = () => {
       {showAddForm && (
         <StaffForm 
           staff={newStaff}
-          onUpdate={(field, value) => setNewStaff({...newStaff, [field]: value})}
+          onUpdate={handleNewStaffUpdate}
           onSave={handleAddStaff}
           onCancel={() => {
             setShowAddForm(false)
             setBatchError('')
           }}
           hotels={hotels}
+          designations={designations}
           title="Add New Staff Member"
           batchError={batchError}
         />
@@ -448,12 +482,17 @@ const AllStaffPage: React.FC = () => {
       {editingStaff && (
         <StaffForm 
           staff={editingStaff}
-          onUpdate={(field, value) => setEditingStaff({...editingStaff, [field]: value})}
+          onUpdate={handleEditStaffUpdate}
           onSave={() => handleEditStaff(editingStaff)}
-          onCancel={() => setEditingStaff(null)}
+          onCancel={() => {
+            setEditingStaff(null)
+            setBatchError('')
+          }}
           hotels={hotels}
+          designations={designations}
           title="Edit Staff Member"
           isEdit={true}
+          batchError={batchError}
         />
       )}
 
