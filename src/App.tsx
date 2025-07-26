@@ -3,6 +3,7 @@ import './App.css'
 import { StaffProvider, useStaff } from './contexts/StaffContext'
 import { VacationProvider } from './contexts/VacationContext'
 import Navigation from './components/Navigation'
+import Footer from './components/Footer'
 import HomePage from './pages/Home/HomePage'
 import AllStaffPage from './pages/Staff/AllStaffPage'
 import VacationPage from './pages/Vacation/VacationPage'
@@ -177,18 +178,22 @@ const AppContent: React.FC = () => {
   }, [staff.length, setStaff])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex flex-col">
       <Navigation currentPage={currentPage} setCurrentPage={setCurrentPage} />
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
-        {currentPage === 'home' ? (
-          <HomePage staff={staff} />
-        ) : currentPage === 'allstaff' ? (
-          <AllStaffPage />
-        ) : (
-          <VacationPage />
-        )}
-      </div>
+      <main className="flex-1">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          {currentPage === 'home' ? (
+            <HomePage staff={staff} />
+          ) : currentPage === 'allstaff' ? (
+            <AllStaffPage />
+          ) : (
+            <VacationPage />
+          )}
+        </div>
+      </main>
+
+      <Footer />
     </div>
   )
 }
