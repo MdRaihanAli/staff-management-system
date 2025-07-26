@@ -23,7 +23,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, setCurrentPage }) 
             </div>
             <div className="hidden sm:block">
               <h1 className="text-xl lg:text-2xl font-bold text-white">
-                <span className="text-blue-100">VS4</span> Staff Management
+                <span className="text-white">VS4</span> Staff Management
               </h1>
             </div>
             <div className="sm:hidden">

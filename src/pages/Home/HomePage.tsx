@@ -1,6 +1,7 @@
 import React from 'react'
 import type { Staff } from '../../types/staff'
 import { getStaffStats } from '../../utils/staffUtils'
+import SimpleStaffTable from '../../components/staff/SimpleStaffTable'
 
 interface HomePageProps {
   staff: Staff[]
