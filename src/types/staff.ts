@@ -41,6 +41,7 @@ export interface SearchFilters {
   department: string
   passportExpireDate: string
   cardNumber: string
+  status: string
 }
 
 export interface StaffContextType {

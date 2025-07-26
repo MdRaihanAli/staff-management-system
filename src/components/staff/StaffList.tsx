@@ -5,6 +5,8 @@ interface StaffListProps {
   filteredStaff: Staff[]
   selectedStaff: number[]
   onToggleSelection: (id: number) => void
+  onSelectAll: () => void
+  onDeselectAll: () => void
   onViewStaff: (staff: Staff) => void
   onEditStaff: (staff: Staff) => void
   onDeleteStaff: (id: number) => void
@@ -14,10 +16,22 @@ const StaffList: React.FC<StaffListProps> = ({
   filteredStaff,
   selectedStaff,
   onToggleSelection,
+  onSelectAll,
+  onDeselectAll,
   onViewStaff,
   onEditStaff,
   onDeleteStaff
 }) => {
+  const allSelected = filteredStaff.length > 0 && selectedStaff.length === filteredStaff.length
+  const someSelected = selectedStaff.length > 0 && selectedStaff.length < filteredStaff.length
+
+  const handleMasterCheckbox = () => {
+    if (allSelected) {
+      onDeselectAll()
+    } else {
+      onSelectAll()
+    }
+  }
   return (
     <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl shadow-xl overflow-hidden">
       {/* Header */}
@@ -27,8 +41,17 @@ const StaffList: React.FC<StaffListProps> = ({
             <span className="mr-3 text-2xl">👥</span>
             Staff Directory
           </h2>
-          <div className="bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
-            <span className="text-white font-bold">{filteredStaff.length} members</span>
+          <div className="flex items-center space-x-3">
+            {selectedStaff.length > 0 && (
+              <div className="bg-green-500/20 backdrop-blur-sm rounded-full px-4 py-2 border border-green-300">
+                <span className="text-green-100 font-bold">
+                  {selectedStaff.length} selected
+                </span>
+              </div>
+            )}
+            <div className="bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
+              <span className="text-white font-bold">{filteredStaff.length} members</span>
+            </div>
           </div>
         </div>
       </div>
@@ -46,7 +69,13 @@ const StaffList: React.FC<StaffListProps> = ({
             <div className="col-span-1 flex justify-center">
               <input
                 type="checkbox"
+                checked={allSelected}
+                ref={(el) => {
+                  if (el) el.indeterminate = someSelected
+                }}
+                onChange={handleMasterCheckbox}
                 className="rounded border-gray-400 text-blue-600 focus:ring-blue-500 focus:ring-2"
+                title={allSelected ? 'Deselect All' : someSelected ? 'Select All' : 'Select All'}
               />
             </div>
             <div className="col-span-3 text-xs font-bold text-gray-600 uppercase tracking-wider">
@@ -71,7 +100,7 @@ const StaffList: React.FC<StaffListProps> = ({
 
           {/* Card-Style Rows */}
           <div className="space-y-4">
-            {filteredStaff.map((person) => (
+            {filteredStaff.map((person, index) => (
               <div 
                 key={person.id} 
                 className="bg-white border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden"
@@ -95,7 +124,7 @@ const StaffList: React.FC<StaffListProps> = ({
                           <span className="text-white text-lg font-bold">👤</span>
                         </div>
                         <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center border-2 border-white">
-                          <span className="text-xs font-bold text-white">{person.sl}</span>
+                          <span className="text-xs font-bold text-white">{index + 1}</span>
                         </div>
                       </div>
                       <div className="flex-1 min-w-0">

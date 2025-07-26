@@ -14,7 +14,7 @@ export const useStaffOperations = () => {
       newStaff.batchNo !== ''
     )
     if (duplicateBatch) {
-      setBatchError('Batch number already exists. Please use a unique batch number.')
+      setBatchError('Batch number already  exists. Please use a unique batch number.')
       return false
     }
     setBatchError('')

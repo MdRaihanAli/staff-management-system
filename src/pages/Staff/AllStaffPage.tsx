@@ -306,6 +306,8 @@ const AllStaffPage: React.FC = () => {
             onViewStaff={setViewingStaff}
             onEditStaff={setEditingStaff}
             onDeleteStaff={deleteStaff}
+            onSelectAll={selectAllStaff}
+            onDeselectAll={deselectAllStaff}
           />
         </>
       ) : (
@@ -410,25 +412,34 @@ const AllStaffPage: React.FC = () => {
 
           {/* Selection Controls */}
           {filteredStaff.length > 0 && (
-            <div className="flex justify-between items-center mb-4">
-              <div className="flex gap-2">
-                <button
-                  onClick={selectAllStaff}
-                  className="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
-                >
-                  ✅ Select All ({filteredStaff.length})
-                </button>
-                {selectedStaff.length > 0 && (
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 mb-6 border border-blue-200">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-3">
                   <button
-                    onClick={deselectAllStaff}
-                    className="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
+                    onClick={selectAllStaff}
+                    className="px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200 font-medium shadow-md hover:shadow-lg"
                   >
-                    ❌ Deselect All
+                    ✅ Select All ({filteredStaff.length})
                   </button>
-                )}
-              </div>
-              <div className="text-xs text-gray-600">
-                {filteredStaff.length} staff found
+                  {selectedStaff.length > 0 && (
+                    <button
+                      onClick={deselectAllStaff}
+                      className="px-4 py-2 text-sm bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-all duration-200 font-medium shadow-md hover:shadow-lg"
+                    >
+                      ❌ Deselect All
+                    </button>
+                  )}
+                </div>
+                <div className="flex items-center space-x-4">
+                  {selectedStaff.length > 0 && (
+                    <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-bold border border-green-300">
+                      🎯 {selectedStaff.length} of {filteredStaff.length} selected
+                    </div>
+                  )}
+                  <div className="text-sm text-blue-700 font-semibold">
+                    📊 {filteredStaff.length} staff found
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -438,6 +449,8 @@ const AllStaffPage: React.FC = () => {
             filteredStaff={filteredStaff}
             selectedStaff={selectedStaff}
             onToggleSelection={toggleStaffSelection}
+            onSelectAll={selectAllStaff}
+            onDeselectAll={deselectAllStaff}
             onViewStaff={setViewingStaff}
             onEditStaff={setEditingStaff}
             onDeleteStaff={deleteStaff}
