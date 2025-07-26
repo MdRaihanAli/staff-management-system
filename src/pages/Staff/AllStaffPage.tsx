@@ -13,7 +13,7 @@ import StaffList from '../../components/staff/StaffList'
 import StaffForm from '../../components/staff/StaffForm'
 
 const AllStaffPage: React.FC = () => {
-  const { staff, setStaff, hotels, setHotels, departments, setDepartments, designations, setDesignations } = useStaff()
+  const { staff, setStaff, hotels, setHotels, departments, setDepartments, designations } = useStaff()
   const { batchError, setBatchError, addStaff, editStaff, deleteStaff, addSampleData } = useStaffOperations()
   
   // State management
