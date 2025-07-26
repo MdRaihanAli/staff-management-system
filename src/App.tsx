@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import { StaffProvider, useStaff } from './contexts/StaffContext'
-import Navigation from './components/layout/Navigation'
+import { VacationProvider } from './contexts/VacationContext'
+import Navigation from './components/Navigation'
 import HomePage from './pages/Home/HomePage'
 import AllStaffPage from './pages/Staff/AllStaffPage'
+import VacationPage from './pages/Vacation/VacationPage'
 import type { Staff } from './types/staff'
 
 // Sample data for initialization
@@ -164,7 +166,7 @@ const sampleStaffData: Staff[] = [
 
 // Inner component that uses the context
 const AppContent: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<'home' | 'allstaff'>('home')
+  const [currentPage, setCurrentPage] = useState<'home' | 'allstaff' | 'vacation'>('home')
   const { staff, setStaff } = useStaff()
 
   // Initialize with sample data on first load
@@ -181,8 +183,10 @@ const AppContent: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
         {currentPage === 'home' ? (
           <HomePage staff={staff} />
-        ) : (
+        ) : currentPage === 'allstaff' ? (
           <AllStaffPage />
+        ) : (
+          <VacationPage />
         )}
       </div>
     </div>
@@ -192,7 +196,9 @@ const AppContent: React.FC = () => {
 function App() {
   return (
     <StaffProvider>
-      <AppContent />
+      <VacationProvider>
+        <AppContent />
+      </VacationProvider>
     </StaffProvider>
   )
 }

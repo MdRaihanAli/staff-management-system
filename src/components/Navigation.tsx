@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 
 interface NavigationProps {
-  currentPage: 'home' | 'allstaff'
-  setCurrentPage: (page: 'home' | 'allstaff') => void
+  currentPage: 'home' | 'allstaff' | 'vacation'
+  setCurrentPage: (page: 'home' | 'allstaff' | 'vacation') => void
 }
 
 const Navigation: React.FC<NavigationProps> = ({ currentPage, setCurrentPage }) => {
@@ -53,6 +53,16 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, setCurrentPage }) 
             >
               👥 All Staff
             </button>
+            <button
+              onClick={() => setCurrentPage('vacation')}
+              className={`px-6 py-2 rounded-lg font-medium transition-all duration-200 ${
+                currentPage === 'vacation'
+                  ? 'bg-white text-blue-700 shadow-md transform scale-105'
+                  : 'text-blue-100 hover:text-white hover:bg-blue-700 hover:shadow-md'
+              }`}
+            >
+              🏖️ Vacation
+            </button>
           </div>
 
           {/* Mobile menu button */}
@@ -101,6 +111,19 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, setCurrentPage }) 
                 }`}
               >
                 👥 All Staff
+              </button>
+              <button
+                onClick={() => {
+                  setCurrentPage('vacation')
+                  setIsMobileMenuOpen(false)
+                }}
+                className={`px-4 py-3 rounded-lg font-medium text-left transition-all duration-200 ${
+                  currentPage === 'vacation'
+                    ? 'bg-white text-blue-700 shadow-md'
+                    : 'text-blue-100 hover:text-white hover:bg-blue-700'
+                }`}
+              >
+                🏖️ Vacation
               </button>
             </div>
           </div>
