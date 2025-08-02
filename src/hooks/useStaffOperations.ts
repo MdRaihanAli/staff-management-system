@@ -28,7 +28,8 @@ export const useStaffOperations = () => {
         id: newId,
         sl: newSl,
         name: newStaff.name.trim(),
-        department: newStaff.department.trim() || 'Not Specified'
+        department: newStaff.department.trim() || 'Not Specified',
+        company: newStaff.company.trim() || 'Not Specified'
       }
       setStaff([...staff, staffToAdd])
       return true

@@ -14,7 +14,7 @@ import StaffList from '../../components/staff/StaffList'
 import StaffForm from '../../components/staff/StaffForm'
 
 const AllStaffPage: React.FC = () => {
-  const { staff, setStaff, hotels, setHotels, departments } = useStaff()
+  const { staff, setStaff, hotels, setHotels, companies, setCompanies, departments, setDepartments } = useStaff()
   const { batchError, setBatchError, addStaff, editStaff, deleteStaff } = useStaffOperations()
   
   // State management
@@ -25,6 +25,8 @@ const AllStaffPage: React.FC = () => {
   const [showExitedStaff, setShowExitedStaff] = useState(false)
   const [filterVisa, setFilterVisa] = useState('')
   const [filterHotel, setFilterHotel] = useState('')
+  const [filterCompany, setFilterCompany] = useState('')
+  const [filterDepartment, setFilterDepartment] = useState('')
   const [filterExpireDate, setFilterExpireDate] = useState('')
   const [filterPassportExpireDate, setFilterPassportExpireDate] = useState('')
 
@@ -33,6 +35,7 @@ const AllStaffPage: React.FC = () => {
     batchNo: '',
     name: '',
     department: '',
+    company: '',
     visaType: '' as const,
     cardNo: '',
     issueDate: '',
@@ -48,6 +51,8 @@ const AllStaffPage: React.FC = () => {
 
   const [showManageModal, setShowManageModal] = useState(false)
   const [newHotel, setNewHotel] = useState('')
+  const [newCompany, setNewCompany] = useState('')
+  const [newDepartment, setNewDepartment] = useState('')
   const [selectedStaff, setSelectedStaff] = useState<number[]>([])
   const [showBulkActions, setShowBulkActions] = useState(false)
   const [bulkAction, setBulkAction] = useState('')
@@ -76,6 +81,28 @@ const AllStaffPage: React.FC = () => {
     setHotels(hotels.filter(hotel => hotel !== hotelToRemove))
   }
 
+  const addCompany = () => {
+    if (newCompany.trim() && !companies.includes(newCompany.trim())) {
+      setCompanies([...companies, newCompany.trim()])
+      setNewCompany('')
+    }
+  }
+
+  const removeCompany = (companyToRemove: string) => {
+    setCompanies(companies.filter(company => company !== companyToRemove))
+  }
+
+  const addDepartment = () => {
+    if (newDepartment.trim() && !departments.includes(newDepartment.trim())) {
+      setDepartments([...departments, newDepartment.trim()])
+      setNewDepartment('')
+    }
+  }
+
+  const removeDepartment = (departmentToRemove: string) => {
+    setDepartments(departments.filter(department => department !== departmentToRemove))
+  }
+
   // Helper functions to handle field updates with batch error clearing
   const handleNewStaffUpdate = (field: string, value: string | number) => {
     if (field === 'batchNo') {
@@ -97,6 +124,8 @@ const AllStaffPage: React.FC = () => {
     searchTerm,
     filterVisa,
     filterHotel,
+    filterCompany,
+    filterDepartment,
     filterExpireDate,
     searchFilters,
     showExitedStaff,
@@ -115,13 +144,15 @@ const AllStaffPage: React.FC = () => {
   }
 
   const handleExportExcel = () => {
-    const exportData = getExportData()
+    // Export filtered data instead of all data
+    const exportData = filteredStaff
     // Create a custom export function with appropriate filename
     const ws = XLSX.utils.json_to_sheet(exportData.map((s: any) => ({
       'SL': s.sl,
       'Batch No': s.batchNo,
       'Name': s.name,
       'Department': s.department,
+      'Company': s.company,
       'Visa Type': s.visaType,
       'Card No': s.cardNo,
       'Issue Date': s.issueDate,
@@ -137,18 +168,20 @@ const AllStaffPage: React.FC = () => {
     const wb = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(wb, ws, 'Staff')
     const filename = showExitedStaff 
-      ? `exited_staff_${new Date().toISOString().split('T')[0]}.xlsx`
-      : `active_staff_${new Date().toISOString().split('T')[0]}.xlsx`
+      ? `filtered_exited_staff_${new Date().toISOString().split('T')[0]}.xlsx`
+      : `filtered_staff_${new Date().toISOString().split('T')[0]}.xlsx`
     XLSX.writeFile(wb, filename)
   }
 
   const handleExportWord = () => {
-    const exportData = getExportData()
+    // Export filtered data instead of all data
+    const exportData = filteredStaff
     exportToWord(exportData)
   }
 
   const handleExportJSON = () => {
-    const exportData = getExportData()
+    // Export filtered data instead of all data
+    const exportData = filteredStaff
     exportToJSON(exportData)
   }
 
@@ -179,7 +212,7 @@ const AllStaffPage: React.FC = () => {
   // Reset to first page when search filters change
   React.useEffect(() => {
     setCurrentPage(1)
-  }, [searchTerm, filterVisa, filterHotel, filterExpireDate, filterPassportExpireDate, showExitedStaff, searchFilters])
+  }, [searchTerm, filterVisa, filterHotel, filterCompany, filterDepartment, filterExpireDate, filterPassportExpireDate, showExitedStaff, searchFilters])
 
   // Staff operations
   const handleAddStaff = () => {
@@ -189,6 +222,7 @@ const AllStaffPage: React.FC = () => {
         batchNo: '',
         name: '',
         department: '',
+        company: '',
         visaType: '',
         cardNo: '',
         issueDate: '',
@@ -268,8 +302,9 @@ const AllStaffPage: React.FC = () => {
 
   // Print functionality
   const printStaffList = () => {
-    const printData = getExportData()
-    const printTitle = showExitedStaff ? 'Exited Staff Archive' : 'Active Staff Management'
+    // Print filtered data instead of all data
+    const printData = filteredStaff
+    const printTitle = showExitedStaff ? 'Filtered Exited Staff Archive' : 'Filtered Staff Management'
     const printWindow = window.open('', '_blank')
     if (printWindow) {
       const printContent = `
@@ -292,7 +327,8 @@ const AllStaffPage: React.FC = () => {
             <div class="header-info">
               <h1>🏨 ${printTitle}</h1>
               <p>Generated on: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p>
-              <p>Total Staff: ${printData.length}</p>
+              <p>Filtered Results: ${printData.length} staff</p>
+              <p><em>This report shows only the staff matching your current search and filter criteria</em></p>
             </div>
             <table>
               <thead>
@@ -301,6 +337,7 @@ const AllStaffPage: React.FC = () => {
                   <th>Batch No</th>
                   <th>Name</th>
                   <th>Department</th>
+                  <th>Company</th>
                   <th>Hotel</th>
                   <th>Phone</th>
                   <th>Visa Type</th>
@@ -314,7 +351,8 @@ const AllStaffPage: React.FC = () => {
                     <td>${person.sl}</td>
                     <td>${person.batchNo || 'N/A'}</td>
                     <td>${person.name}</td>
-                                        <td>{person.department || 'N/A'}</td>
+                    <td>${person.department || 'N/A'}</td>
+                    <td>${person.company || 'N/A'}</td>
                     <td>${person.hotel || 'Unassigned'}</td>
                     <td>${person.phone || 'N/A'}</td>
                     <td>${person.visaType || 'N/A'}</td>
@@ -565,6 +603,10 @@ const AllStaffPage: React.FC = () => {
               setSearchTerm={setSearchTerm}
               filterHotel={filterHotel}
               setFilterHotel={setFilterHotel}
+              filterCompany={filterCompany}
+              setFilterCompany={setFilterCompany}
+              filterDepartment={filterDepartment}
+              setFilterDepartment={setFilterDepartment}
               filterVisa={filterVisa}
               setFilterVisa={setFilterVisa}
               filterExpireDate={filterExpireDate}
@@ -572,6 +614,8 @@ const AllStaffPage: React.FC = () => {
               filterPassportExpireDate={filterPassportExpireDate}
               setFilterPassportExpireDate={setFilterPassportExpireDate}
               hotels={hotels}
+              companies={companies}
+              departments={departments}
               advancedSearch={advancedSearch}
               setAdvancedSearch={setAdvancedSearch}
               searchFilters={searchFilters}
@@ -776,6 +820,7 @@ const AllStaffPage: React.FC = () => {
           }}
           hotels={hotels}
           departments={departments}
+          companies={companies}
           title="Add New Staff Member"
           batchError={batchError}
         />
@@ -793,6 +838,7 @@ const AllStaffPage: React.FC = () => {
           }}
           hotels={hotels}
           departments={departments}
+          companies={companies}
           title="Edit Staff Member"
           isEdit={true}
           batchError={batchError}
@@ -827,6 +873,10 @@ const AllStaffPage: React.FC = () => {
                   <div>
                     <span className="text-gray-600 text-sm">Department:</span>
                     <p className="font-semibold text-gray-900">{viewingStaff.department || 'Not specified'}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-600 text-sm">Company:</span>
+                    <p className="font-semibold text-gray-900">{viewingStaff.company || 'Not specified'}</p>
                   </div>
                   <div>
                     <span className="text-gray-600 text-sm">Status:</span>
@@ -917,26 +967,28 @@ const AllStaffPage: React.FC = () => {
       {/* Manage Hotels Modal */}
       {showManageModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl p-4 sm:p-6 w-full max-w-2xl max-h-screen overflow-y-auto shadow-2xl">
+          <div className="bg-white rounded-xl p-4 sm:p-6 w-full max-w-4xl max-h-screen overflow-y-auto shadow-2xl">
             <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-900 flex items-center">
               <span className="mr-2">⚙️</span>
-              Manage Hotels
+              Manage System Data
             </h2>
             
-            <div>
-              <h3 className="text-lg font-semibold mb-4 text-gray-800">🏨 Hotels</h3>
-              <div className="flex gap-2 mb-4">
-                <input
-                  type="text"
-                  placeholder="Enter new hotel name"
-                  value={newHotel}
-                  onChange={(e) => setNewHotel(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && addHotel()}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                />
-                <button
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Hotels Section */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4 text-gray-800">🏨 Hotels</h3>
+                <div className="flex gap-2 mb-4">
+                  <input
+                    type="text"
+                    placeholder="Enter new hotel name"
+                    value={newHotel}
+                    onChange={(e) => setNewHotel(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && addHotel()}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  />
+                  <button
                     onClick={addHotel}
-                    className="bg-blue-600 text-zinc-800 px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium border border-blue-700"
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
                   >
                     Add
                   </button>
@@ -955,11 +1007,80 @@ const AllStaffPage: React.FC = () => {
                   ))}
                 </div>
               </div>
+
+              {/* Companies Section */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4 text-gray-800">🏢 Companies</h3>
+                <div className="flex gap-2 mb-4">
+                  <input
+                    type="text"
+                    placeholder="Enter new company name"
+                    value={newCompany}
+                    onChange={(e) => setNewCompany(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && addCompany()}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  />
+                  <button
+                    onClick={addCompany}
+                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+                  >
+                    Add
+                  </button>
+                </div>
+                <div className="space-y-2 max-h-60 overflow-y-auto">
+                  {companies.map((company) => (
+                    <div key={company} className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-lg">
+                      <span className="text-sm text-gray-700">{company}</span>
+                      <button
+                        onClick={() => removeCompany(company)}
+                        className="text-red-500 hover:text-red-700 text-sm"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Departments Section */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4 text-gray-800">🏛️ Departments</h3>
+                <div className="flex gap-2 mb-4">
+                  <input
+                    type="text"
+                    placeholder="Enter new department name"
+                    value={newDepartment}
+                    onChange={(e) => setNewDepartment(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && addDepartment()}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  />
+                  <button
+                    onClick={addDepartment}
+                    className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
+                  >
+                    Add
+                  </button>
+                </div>
+                <div className="space-y-2 max-h-60 overflow-y-auto">
+                  {departments.map((department) => (
+                    <div key={department} className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-lg">
+                      <span className="text-sm text-gray-700">{department}</span>
+                      <button
+                        onClick={() => removeDepartment(department)}
+                        className="text-red-500 hover:text-red-700 text-sm"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
             
             <div className="flex justify-end mt-6">
               <button
                 onClick={() => setShowManageModal(false)}
-                className="bg-gray-500 text-zinc-800 px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors font-medium"
+                className="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors font-medium"
               >
                 Close
               </button>

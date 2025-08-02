@@ -4,6 +4,7 @@ export interface Staff {
   batchNo: string
   name: string
   department: string
+  company: string
   visaType: 'Employment' | 'Visit' | ''
   cardNo: string
   issueDate: string
@@ -22,6 +23,7 @@ export interface NewStaff {
   batchNo: string
   name: string
   department: string
+  company: string
   visaType: 'Employment' | 'Visit' | ''
   cardNo: string
   issueDate: string
@@ -46,6 +48,8 @@ export interface StaffContextType {
   setStaff: React.Dispatch<React.SetStateAction<Staff[]>>
   hotels: string[]
   setHotels: React.Dispatch<React.SetStateAction<string[]>>
+  companies: string[]
+  setCompanies: React.Dispatch<React.SetStateAction<string[]>>
   departments: string[]
   setDepartments: React.Dispatch<React.SetStateAction<string[]>>
   loadRealData: () => Promise<boolean>

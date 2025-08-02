@@ -25,6 +25,7 @@ const sampleStaffData: Staff[] = [
     photo: '',
     remark: 'Excellent performance',
     department: 'Front Desk',
+    company: 'Hotel Management Corp',
     hotel: 'Grand Plaza Hotel',
     salary: 65000,
     passportExpireDate: '2026-01-15'
@@ -43,6 +44,7 @@ const sampleStaffData: Staff[] = [
     photo: '',
     remark: 'Reliable and efficient',
     department: 'Housekeeping',
+    company: 'Resort Services Ltd',
     hotel: 'Grand Plaza Hotel',
     salary: 45000,
     passportExpireDate: '2026-02-15'
@@ -61,6 +63,7 @@ const sampleStaffData: Staff[] = [
     photo: '',
     remark: 'Excellent culinary skills',
     department: 'Kitchen',
+    company: 'Hospitality Group Inc',
     hotel: 'Ocean View Resort',
     salary: 55000,
     passportExpireDate: '2026-03-10'
@@ -79,6 +82,7 @@ const sampleStaffData: Staff[] = [
     photo: '',
     remark: 'Multilingual skills',
     department: 'Reception',
+    company: 'Tourism Solutions',
     hotel: 'Ocean View Resort',
     salary: 35000,
     passportExpireDate: '2026-06-15'
@@ -97,6 +101,7 @@ const sampleStaffData: Staff[] = [
     photo: '',
     remark: 'Night shift preferred',
     department: 'Security',
+    company: 'Guest Services Co',
     hotel: 'City Center Inn',
     salary: 30000,
     passportExpireDate: '2026-04-20'
@@ -115,6 +120,7 @@ const sampleStaffData: Staff[] = [
     photo: '',
     remark: 'Skilled in electrical work',
     department: 'Maintenance',
+    company: 'Accommodation Partners',
     hotel: 'Mountain Lodge',
     salary: 32000,
     passportExpireDate: '2026-05-10'
@@ -133,6 +139,7 @@ const sampleStaffData: Staff[] = [
     photo: '',
     remark: 'Visa expired, returned home',
     department: 'Restaurant',
+    company: 'Travel & Stay Inc',
     hotel: 'Beach Paradise Hotel',
     salary: 25000,
     passportExpireDate: '2026-07-15'
@@ -151,6 +158,7 @@ const sampleStaffData: Staff[] = [
     photo: '',
     remark: 'Beach safety',
     department: 'Maintenance',
+    company: 'Hotel Management Corp',
     hotel: 'Beach Paradise Hotel',
     salary: 28000,
     passportExpireDate: '2026-08-15'
@@ -160,7 +168,7 @@ const sampleStaffData: Staff[] = [
 // Inner component that uses the context
 const AppContent: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<'home' | 'allstaff' | 'vacation'>('home')
-  const { staff, setStaff } = useStaff()
+  const { staff, setStaff, departments } = useStaff()
 
   // Initialize with sample data on first load
   useEffect(() => {
@@ -176,7 +184,7 @@ const AppContent: React.FC = () => {
       <main className="flex-1">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {currentPage === 'home' ? (
-            <HomePage staff={staff} />
+            <HomePage staff={staff} departments={departments} />
           ) : currentPage === 'allstaff' ? (
             <AllStaffPage />
           ) : (

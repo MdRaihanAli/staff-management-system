@@ -64,13 +64,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
 
       {/* Basic Search */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-        <input
-          type="text"
-          placeholder="🔍 Search name, batch, card number..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-        />
+       
         <select
           value={filterHotel}
           onChange={(e) => setFilterHotel(e.target.value)}
@@ -81,22 +75,8 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
             <option key={hotel} value={hotel}>{hotel}</option>
           ))}
         </select>
-        <select
-          value={filterVisa}
-          onChange={(e) => setFilterVisa(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-        >
-          <option value="">📄 All Visa Types</option>
-          <option value="Employment">Employment</option>
-          <option value="Visit">Visit</option>
-        </select>
-        <input
-          type="date"
-          placeholder="📅 Expire Date"
-          value={filterExpireDate}
-          onChange={(e) => setFilterExpireDate(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-        />
+        
+        
       </div>
 
       {/* Advanced Search */}
@@ -104,6 +84,13 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
         <div className="bg-blue-50 rounded-lg p-4 mb-4">
           <h3 className="text-sm font-bold text-blue-900 mb-3">🔧 Advanced Search Options</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+             <input
+          type="text"
+          placeholder="🔍 Search name, batch, card number..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+        />
             <input
               type="number"
               placeholder="💰 Min Salary"
@@ -126,6 +113,13 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
               className="px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
             />
             <input
+          type="date"
+          placeholder="📅 Expire Date"
+          value={filterExpireDate}
+          onChange={(e) => setFilterExpireDate(e.target.value)}
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+        />
+            <input
               type="text"
               placeholder="💳 Card Number"
               value={searchFilters.cardNumber}
@@ -142,6 +136,15 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
               <option value="Jobless">Jobless</option>
               <option value="Exited">Exited</option>
             </select>
+            <select
+          value={filterVisa}
+          onChange={(e) => setFilterVisa(e.target.value)}
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+        >
+          <option value="">📄 All Visa Types</option>
+          <option value="Employment">Employment</option>
+          <option value="Visit">Visit</option>
+        </select>
           </div>
         </div>
       )}

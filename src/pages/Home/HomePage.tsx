@@ -4,29 +4,41 @@ import { getStaffStats } from '../../utils/staffUtils'
 
 interface HomePageProps {
   staff: Staff[]
+  departments: string[]
 }
 
-const HomePage: React.FC<HomePageProps> = ({ staff }) => {
+const HomePage: React.FC<HomePageProps> = ({ staff, departments }) => {
   const stats = getStaffStats(staff)
   
-  // Get unique hotels and count staff for each
+  // Get unique hotels and count staff for each with department breakdown
   const hotelStats = staff.reduce((acc, person) => {
     if (!person.hotel) return acc
     
     if (!acc[person.hotel]) {
       acc[person.hotel] = {
         total: 0,
-        working: 0
+        working: 0,
+        departments: {}
       }
     }
     acc[person.hotel].total++
     if (person.status === 'Working') {
       acc[person.hotel].working++
     }
+    
+    // Count staff by department
+    if (person.department) {
+      if (!acc[person.hotel].departments[person.department]) {
+        acc[person.hotel].departments[person.department] = 0
+      }
+      acc[person.hotel].departments[person.department]++
+    }
+    
     return acc
   }, {} as Record<string, { 
     total: number; 
-    working: number
+    working: number;
+    departments: Record<string, number>
   }>)
 
   // Get visa expiry alerts
@@ -241,10 +253,29 @@ const HomePage: React.FC<HomePageProps> = ({ staff }) => {
                   </div>
                   
                   <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-sm text-blue-100">Total Staff:</span>
-                      <span className="font-medium text-white">{stats.total}</span>
-                    </div>
+                    {/* Department Breakdown */}
+                    {Object.keys(stats.departments).length > 0 && (
+                      <div className="pt-3">
+                        <h4 className="text-sm font-semibold text-white mb-2 flex items-center">
+                          <span className="mr-2">🏛️</span>
+                          Departments:
+                        </h4>
+                        <div className="space-y-1 max-h-24 overflow-y-auto">
+                          {Object.entries(stats.departments)
+                            .sort(([,a], [,b]) => b - a) // Sort by count descending
+                            .map(([dept, count]) => (
+                            <div key={dept} className="flex justify-between text-xs">
+                              <span className="text-blue-100 truncate mr-2" title={dept}>
+                                {dept}
+                              </span>
+                              <span className="font-medium text-white bg-white/20 px-2 py-0.5 rounded-full min-w-[24px] text-center">
+                                {count}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               );
@@ -283,6 +314,13 @@ const HomePage: React.FC<HomePageProps> = ({ staff }) => {
                     : 0}%`
                 }}
               ></div>
+            </div>
+          </div>
+          <div className="bg-gradient-to-br from-green-600 to-green-700 p-6 rounded-xl text-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+            <div className="text-4xl font-bold text-white mb-2">{departments.length}</div>
+            <div className="text-green-100 font-medium">Total Departments</div>
+            <div className="mt-3 bg-green-500/30 rounded-full h-1 w-full">
+              <div className="bg-green-300 h-1 rounded-full" style={{width: '90%'}}></div>
             </div>
           </div>
         </div>

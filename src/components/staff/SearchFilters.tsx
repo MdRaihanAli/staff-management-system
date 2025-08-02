@@ -6,6 +6,10 @@ interface SearchFiltersProps {
   setSearchTerm: (term: string) => void
   filterHotel: string
   setFilterHotel: (hotel: string) => void
+  filterCompany: string
+  setFilterCompany: (company: string) => void
+  filterDepartment: string
+  setFilterDepartment: (department: string) => void
   filterVisa: string
   setFilterVisa: (visa: string) => void
   filterExpireDate: string
@@ -13,6 +17,8 @@ interface SearchFiltersProps {
   filterPassportExpireDate: string
   setFilterPassportExpireDate: (date: string) => void
   hotels: string[]
+  companies: string[]
+  departments: string[]
   advancedSearch: boolean
   setAdvancedSearch: (advanced: boolean) => void
   searchFilters: SearchFiltersType
@@ -25,6 +31,10 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   setSearchTerm,
   filterHotel,
   setFilterHotel,
+  filterCompany,
+  setFilterCompany,
+  filterDepartment,
+  setFilterDepartment,
   filterVisa,
   setFilterVisa,
   filterExpireDate,
@@ -32,6 +42,8 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   filterPassportExpireDate,
   setFilterPassportExpireDate,
   hotels,
+  companies,
+  departments,
   advancedSearch,
   setAdvancedSearch,
   searchFilters,
@@ -62,7 +74,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
       </div>
       
       {/* Basic Search */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
         <input
           type="text"
           placeholder="🔍 Search by name, phone, department, batch..."
@@ -89,33 +101,33 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           <option value="Employment">Employment Visa</option>
           <option value="Visit">Visit Visa</option>
         </select>
-        <select
-          value={filterExpireDate}
-          onChange={(e) => setFilterExpireDate(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-        >
-          <option value="">⏰ Visa Status</option>
-          <option value="expired">🔴 Expired</option>
-          <option value="expiring">🟡 Expiring Soon (30 days)</option>
-          <option value="valid">🟢 Valid</option>
-        </select>
-        <select
-          value={filterPassportExpireDate}
-          onChange={(e) => setFilterPassportExpireDate(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-        >
-          <option value="">📅 Passport Status</option>
-          <option value="expired">🔴 Expired</option>
-          <option value="expiring">🟡 Expiring Soon (30 days)</option>
-          <option value="valid">🟢 Valid</option>
-        </select>
       </div>
 
       {/* Advanced Search */}
       {advancedSearch && (
         <div className="border-t border-gray-200 pt-4">
           <h3 className="text-sm font-semibold text-gray-700 mb-3">🔧 Advanced Filters</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
+            <select
+              value={filterCompany}
+              onChange={(e) => setFilterCompany(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+            >
+              <option value="">🏢 All Companies</option>
+              {companies.map(company => (
+                <option key={company} value={company}>{company}</option>
+              ))}
+            </select>
+            <select
+              value={filterDepartment}
+              onChange={(e) => setFilterDepartment(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+            >
+              <option value="">🏛️ All Departments</option>
+              {departments.map(department => (
+                <option key={department} value={department}>{department}</option>
+              ))}
+            </select>
             <select
               value={searchFilters.status}
               onChange={(e) => setSearchFilters({...searchFilters, status: e.target.value})}
@@ -125,6 +137,30 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
               <option value="Working">✅ Working</option>
               <option value="Jobless">❌ Jobless</option>
             </select>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+            <select
+              value={filterExpireDate}
+              onChange={(e) => setFilterExpireDate(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+            >
+              <option value="">⏰ Visa Status</option>
+              <option value="expired">🔴 Expired</option>
+              <option value="expiring">🟡 Expiring Soon (30 days)</option>
+              <option value="valid">🟢 Valid</option>
+            </select>
+            <select
+              value={filterPassportExpireDate}
+              onChange={(e) => setFilterPassportExpireDate(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+            >
+              <option value="">📅 Passport Status</option>
+              <option value="expired">🔴 Expired</option>
+              <option value="expiring">🟡 Expiring Soon (30 days)</option>
+              <option value="valid">🟢 Valid</option>
+            </select>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <input
               type="date"
               placeholder="📅 Passport Expire Date"

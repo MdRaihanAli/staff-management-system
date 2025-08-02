@@ -5,6 +5,8 @@ export const filterStaff = (
   searchTerm: string,
   filterVisa: string,
   filterHotel: string,
+  filterCompany: string,
+  filterDepartment: string,
   filterExpireDate: string,
   searchFilters: SearchFilters,
   showExitedStaff: boolean = false,
@@ -30,6 +32,12 @@ export const filterStaff = (
     
     // Filter by hotel
     const matchesHotel = filterHotel === '' || person.hotel === filterHotel
+    
+    // Filter by company
+    const matchesCompany = filterCompany === '' || person.company === filterCompany
+    
+    // Filter by department
+    const matchesDepartment = filterDepartment === '' || person.department === filterDepartment
     
     // Filter by expiry date
     let matchesExpireDate = true
@@ -84,7 +92,7 @@ export const filterStaff = (
     
     const matchesAdvancedStatus = searchFilters.status === '' || person.status === searchFilters.status
     
-    return matchesSearch && matchesVisa && matchesHotel && matchesExpireDate &&
+    return matchesSearch && matchesVisa && matchesHotel && matchesCompany && matchesDepartment && matchesExpireDate &&
            matchesPassportExpireDate && matchesAdvancedPassportExpireDate && 
            matchesCardNumber && matchesAdvancedStatus
   })
@@ -116,6 +124,7 @@ export const generateSampleData = (currentStaff: Staff[], hotels: string[]): Sta
       batchNo: 'B001',
       name: 'Ahmed Hassan',
       department: 'Manager',
+      company: 'Hotel Management Corp',
       visaType: 'Employment' as const,
       cardNo: 'EMP001',
       issueDate: '2027-01-01',
@@ -134,6 +143,7 @@ export const generateSampleData = (currentStaff: Staff[], hotels: string[]): Sta
       batchNo: 'B002',
       name: 'Sarah Johnson',
       department: 'Receptionist',
+      company: 'Resort Services Ltd',
       visaType: 'Employment' as const,
       cardNo: 'EMP002',
       issueDate: '2027-02-01',
@@ -152,6 +162,7 @@ export const generateSampleData = (currentStaff: Staff[], hotels: string[]): Sta
       batchNo: 'B003',
       name: 'Mohammed Ali',
       department: 'Chef',
+      company: 'Hospitality Group Inc',
       visaType: 'Visit' as const,
       cardNo: 'VIS001',
       issueDate: '2027-03-01',
