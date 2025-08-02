@@ -111,19 +111,19 @@ const StaffList: React.FC<StaffListProps> = ({
               <div className="flex gap-2 pt-3 border-t border-gray-200">
                 <button
                   onClick={() => onViewStaff(person)}
-                  className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-2 rounded-lg text-xs font-bold hover:from-green-600 hover:to-green-700 transition-all duration-200 flex items-center justify-center"
+                  className="flex-1 bg-emerald-600 text-white px-3 py-2 rounded-lg text-xs font-medium hover:bg-emerald-700 transition-all duration-200 flex items-center justify-center shadow-md hover:shadow-lg border border-emerald-700"
                 >
                   👁️ View
                 </button>
                 <button
                   onClick={() => onEditStaff(person)}
-                  className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-2 rounded-lg text-xs font-bold hover:from-blue-600 hover:to-blue-700 transition-all duration-200 flex items-center justify-center"
+                  className="flex-1 bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-medium hover:bg-blue-700 transition-all duration-200 flex items-center justify-center shadow-md hover:shadow-lg border border-blue-700"
                 >
                   ✏️ Edit
                 </button>
                 <button
                   onClick={() => onDeleteStaff(person.id)}
-                  className="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-2 rounded-lg text-xs font-bold hover:from-red-600 hover:to-red-700 transition-all duration-200 flex items-center justify-center"
+                  className="flex-1 bg-red-600 text-white px-3 py-2 rounded-lg text-xs font-medium hover:bg-red-700 transition-all duration-200 flex items-center justify-center shadow-md hover:shadow-lg border border-red-700"
                 >
                   🗑️ Delete
                 </button>

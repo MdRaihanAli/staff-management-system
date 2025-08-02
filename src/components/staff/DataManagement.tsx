@@ -64,19 +64,19 @@ const DataManagement: React.FC<DataManagementProps> = ({
           onClick={onExportExcel}
           className="bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-2 rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-200 font-medium text-sm flex items-center justify-center"
         >
-          📊 Excel
+          📊 Export Excel
         </button>
         <button
           onClick={onExportWord}
           className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-2 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 font-medium text-sm flex items-center justify-center"
         >
-          📄 Word
+          📊 Export Word
         </button>
         <button
           onClick={onExportJSON}
           className="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-3 py-2 rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-200 font-medium text-sm flex items-center justify-center"
         >
-          💾 JSON
+        📊 Export JSON
         </button>
         
         {/* Import Options */}
@@ -99,13 +99,7 @@ const DataManagement: React.FC<DataManagementProps> = ({
           />
         </label>
 
-        {/* Data Actions */}
-        <button
-          onClick={onGenerateSample}
-          className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white px-3 py-2 rounded-lg hover:from-indigo-600 hover:to-indigo-700 transition-all duration-200 font-medium text-sm flex items-center justify-center"
-        >
-          🎲 Sample Data
-        </button>
+        {/* Data Actions removed - Sample Data button */}
         </div>
       </div>
     </div>

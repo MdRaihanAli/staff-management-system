@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
+import * as XLSX from 'xlsx'
 import { useStaff } from '../../contexts/StaffContext'
 import { useStaffOperations } from '../../hooks/useStaffOperations'
 import { filterStaff } from '../../utils/staffUtils'
-import { exportToExcel, exportToWord, exportToJSON, importFromJSON, importFromExcel } from '../../utils/exportImport'
+import { exportToWord, exportToJSON, importFromJSON, importFromExcel } from '../../utils/exportImport'
 import type { SearchFilters as SearchFiltersType, NewStaff } from '../../types/staff'
 
 // Import components
@@ -115,6 +116,56 @@ const AllStaffPage: React.FC = () => {
     showExitedStaff,
     filterPassportExpireDate
   )
+
+  // Export helper functions - export based on current view
+  const getExportData = () => {
+    if (showExitedStaff) {
+      // When viewing exited staff, export only exited staff
+      return staff.filter(person => person.status === 'Exited')
+    } else {
+      // When viewing all staff, export only non-exited staff (Working and Jobless)
+      return staff.filter(person => person.status !== 'Exited')
+    }
+  }
+
+  const handleExportExcel = () => {
+    const exportData = getExportData()
+    // Create a custom export function with appropriate filename
+    const ws = XLSX.utils.json_to_sheet(exportData.map((s: any) => ({
+      'SL': s.sl,
+      'Batch No': s.batchNo,
+      'Name': s.name,
+      'Designation': s.designation,
+      'Visa Type': s.visaType,
+      'Card No': s.cardNo,
+      'Issue Date': s.issueDate,
+      'Expire Date': s.expireDate,
+      'Phone': s.phone,
+      'Status': s.status,
+      'Hotel': s.hotel,
+      'Department': s.department,
+      'Salary': s.salary,
+      'Passport Expire Date': s.passportExpireDate,
+      'Photo': s.photo,
+      'Remark': s.remark
+    })))
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, ws, 'Staff')
+    const filename = showExitedStaff 
+      ? `exited_staff_${new Date().toISOString().split('T')[0]}.xlsx`
+      : `active_staff_${new Date().toISOString().split('T')[0]}.xlsx`
+    XLSX.writeFile(wb, filename)
+  }
+
+  const handleExportWord = () => {
+    const exportData = getExportData()
+    exportToWord(exportData)
+  }
+
+  const handleExportJSON = () => {
+    const exportData = getExportData()
+    exportToJSON(exportData)
+  }
 
   // Pagination calculations
   const totalPages = Math.ceil(filteredStaff.length / itemsPerPage)
@@ -233,12 +284,14 @@ const AllStaffPage: React.FC = () => {
 
   // Print functionality
   const printStaffList = () => {
+    const printData = getExportData()
+    const printTitle = showExitedStaff ? 'Exited Staff Archive' : 'Active Staff Management'
     const printWindow = window.open('', '_blank')
     if (printWindow) {
       const printContent = `
         <html>
           <head>
-            <title>Staff List - ${new Date().toLocaleDateString()}</title>
+            <title>${printTitle} - ${new Date().toLocaleDateString()}</title>
             <style>
               body { font-family: Arial, sans-serif; margin: 20px; }
               h1 { color: #333; text-align: center; }
@@ -253,9 +306,9 @@ const AllStaffPage: React.FC = () => {
           </head>
           <body>
             <div class="header-info">
-              <h1>🏨 Professional Hotel Staff Management</h1>
+              <h1>🏨 ${printTitle}</h1>
               <p>Generated on: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p>
-              <p>Total Staff: ${filteredStaff.length}</p>
+              <p>Total Staff: ${printData.length}</p>
             </div>
             <table>
               <thead>
@@ -272,7 +325,7 @@ const AllStaffPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                ${filteredStaff.map(person => `
+                ${printData.map(person => `
                   <tr>
                     <td>${person.sl}</td>
                     <td>${person.batchNo || 'N/A'}</td>
@@ -331,6 +384,66 @@ const AllStaffPage: React.FC = () => {
               </div>
             </div>
 
+          {/* Data Management for Exited Staff */}
+          <div className="bg-white rounded-2xl shadow-xl p-6 mb-8 border border-gray-100">
+            <DataManagement 
+              onExportExcel={handleExportExcel}
+              onExportWord={handleExportWord}
+              onExportJSON={handleExportJSON}
+              onImportExcel={(event) => importFromExcel(event, staff, setStaff)}
+              onImportJSON={(event) => importFromJSON(event, staff, setStaff)}
+              onGenerateSample={addSampleData}
+              onAddStaff={() => setShowAddForm(true)}
+              onManage={() => setShowManageModal(true)}
+              onViewExited={() => setShowExitedStaff(false)}
+            />
+          </div>
+
+          {/* Bulk Actions for Exited Staff */}
+          {selectedStaff.length > 0 && (
+            <div className="bg-red-50 rounded-lg p-4 mb-4 border border-red-200">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-bold text-red-900">
+                  🗑️ Exited Staff Actions ({selectedStaff.length} selected)
+                </h3>
+                <button
+                  onClick={deselectAllStaff}
+                  className="text-xs text-red-600 hover:text-red-800"
+                >
+                  Clear Selection
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => {
+                    if (confirm(`Permanently delete ${selectedStaff.length} selected exited staff members?\n\nThis action cannot be undone.`)) {
+                      setStaff(staff.filter(s => !selectedStaff.includes(s.id)))
+                      setSelectedStaff([])
+                      alert(`Deleted ${selectedStaff.length} exited staff members.`)
+                    }
+                  }}
+                  className="px-3 py-1 bg-red-500 text-white rounded text-xs font-medium hover:bg-red-600 transition-colors"
+                >
+                  🗑️ Delete Selected
+                </button>
+                <button
+                  onClick={() => {
+                    if (confirm(`Change ${selectedStaff.length} selected staff back to Working status?`)) {
+                      setStaff(staff.map(s => 
+                        selectedStaff.includes(s.id) ? { ...s, status: 'Working' as any } : s
+                      ))
+                      setSelectedStaff([])
+                      alert(`Changed ${selectedStaff.length} staff back to Working status.`)
+                    }
+                  }}
+                  className="px-3 py-1 bg-green-500 text-white rounded text-xs font-medium hover:bg-green-600 transition-colors"
+                >
+                  ↩️ Restore to Working
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Pagination Controls for Exited Staff */}
           {filteredStaff.length > itemsPerPage && (
             <div className="bg-white rounded-xl shadow-lg p-4 mb-6 border border-gray-100">
@@ -364,10 +477,10 @@ const AllStaffPage: React.FC = () => {
                   <button
                     onClick={goToPrevPage}
                     disabled={currentPage === 1}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border ${
                       currentPage === 1
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : 'bg-blue-500 text-white hover:bg-blue-600 shadow-md hover:shadow-lg'
+                        ? 'bg-gray-200 text-gray-700 cursor-not-allowed border-gray-300'
+                        : 'bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg border-blue-700'
                     }`}
                   >
                     ← Previous
@@ -406,10 +519,10 @@ const AllStaffPage: React.FC = () => {
                   <button
                     onClick={goToNextPage}
                     disabled={currentPage === totalPages}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border ${
                       currentPage === totalPages
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : 'bg-blue-500 text-white hover:bg-blue-600 shadow-md hover:shadow-lg'
+                        ? 'bg-gray-200 text-gray-700 cursor-not-allowed border-gray-300'
+                        : 'bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg border-blue-700'
                     }`}
                   >
                     Next →
@@ -451,9 +564,9 @@ const AllStaffPage: React.FC = () => {
           {/* Enhanced Data Management */}
           <div className="bg-white rounded-2xl shadow-xl p-6 mb-8 border border-gray-100">
             <DataManagement 
-              onExportExcel={() => exportToExcel(staff)}
-              onExportWord={() => exportToWord(staff)}
-              onExportJSON={() => exportToJSON(staff)}
+              onExportExcel={handleExportExcel}
+              onExportWord={handleExportWord}
+              onExportJSON={handleExportJSON}
               onImportExcel={(event) => importFromExcel(event, staff, setStaff)}
               onImportJSON={(event) => importFromJSON(event, staff, setStaff)}
               onGenerateSample={addSampleData}
@@ -505,7 +618,7 @@ const AllStaffPage: React.FC = () => {
                     setBulkAction('delete')
                     setShowBulkActions(true)
                   }}
-                  className="px-3 py-1 bg-red-500 text-white rounded text-xs font-medium hover:bg-red-600 transition-colors"
+                  className="px-3 py-1 bg-red-500 text-zinc-800 rounded text-xs font-medium hover:bg-red-600 transition-colors"
                 >
                   🗑️ Delete
                 </button>
@@ -514,7 +627,7 @@ const AllStaffPage: React.FC = () => {
                     setBulkAction('changeHotel')
                     setShowBulkActions(true)
                   }}
-                  className="px-3 py-1 bg-blue-500 text-white rounded text-xs font-medium hover:bg-blue-600 transition-colors"
+                  className="px-3 py-1 bg-blue-600 text-zinc-800 rounded text-xs font-medium hover:bg-blue-700 transition-colors border border-blue-700"
                 >
                   🏨 Change Hotel
                 </button>
@@ -523,7 +636,7 @@ const AllStaffPage: React.FC = () => {
                     setBulkAction('changeStatus')
                     setShowBulkActions(true)
                   }}
-                  className="px-3 py-1 bg-green-500 text-white rounded text-xs font-medium hover:bg-green-600 transition-colors"
+                  className="px-3 py-1 bg-green-500 text-zinc-800 rounded text-xs font-medium hover:bg-green-600 transition-colors"
                 >
                   📊 Change Status
                 </button>
@@ -538,14 +651,14 @@ const AllStaffPage: React.FC = () => {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={selectAllStaff}
-                    className="px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200 font-medium shadow-md hover:shadow-lg"
+                    className="px-4 py-2 text-sm bg-blue-600 text-zinc-800 rounded-lg hover:bg-blue-700 transition-all duration-200 font-medium shadow-md hover:shadow-lg border border-blue-700"
                   >
                     ✅ Select All on Page ({paginatedStaff.length})
                   </button>
                   {selectedStaff.length > 0 && (
                     <button
                       onClick={deselectAllStaff}
-                      className="px-4 py-2 text-sm bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-all duration-200 font-medium shadow-md hover:shadow-lg"
+                      className="px-4 py-2 text-sm bg-slate-600  text-zinc-800 rounded-lg hover:bg-slate-700 transition-all duration-200 font-medium shadow-md hover:shadow-lg border border-slate-700"
                     >
                       ❌ Deselect All
                     </button>
@@ -585,6 +698,8 @@ const AllStaffPage: React.FC = () => {
                     <option value={25}>25 per page</option>
                     <option value={50}>50 per page</option>
                     <option value={100}>100 per page</option>
+                    <option value={500}>500 per page</option>
+                    <option value={1000}>1000 per page</option>
                   </select>
                 </div>
 
@@ -598,10 +713,10 @@ const AllStaffPage: React.FC = () => {
                   <button
                     onClick={goToPrevPage}
                     disabled={currentPage === 1}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border ${
                       currentPage === 1
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : 'bg-blue-500 text-white hover:bg-blue-600 shadow-md hover:shadow-lg'
+                        ? 'bg-gray-200 text-gray-700 cursor-not-allowed border-gray-300'
+                        : 'bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg border-blue-700'
                     }`}
                   >
                     ← Previous
@@ -640,10 +755,10 @@ const AllStaffPage: React.FC = () => {
                   <button
                     onClick={goToNextPage}
                     disabled={currentPage === totalPages}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border ${
                       currentPage === totalPages
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : 'bg-blue-500 text-white hover:bg-blue-600 shadow-md hover:shadow-lg'
+                        ? 'bg-gray-200 text-gray-700 cursor-not-allowed border-gray-300'
+                        : 'bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg border-blue-700'
                     }`}
                   >
                     Next →
@@ -840,7 +955,7 @@ const AllStaffPage: React.FC = () => {
                   />
                   <button
                     onClick={addHotel}
-                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium"
+                    className="bg-blue-600 text-zinc-800 px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium border border-blue-700"
                   >
                     Add
                   </button>
@@ -873,7 +988,7 @@ const AllStaffPage: React.FC = () => {
                   />
                   <button
                     onClick={addDepartment}
-                    className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors text-sm font-medium"
+                    className="bg-green-500 text-zinc-800 px-4 py-2 rounded-lg hover:bg-green-600 transition-colors text-sm font-medium"
                   >
                     Add
                   </button>
@@ -897,7 +1012,7 @@ const AllStaffPage: React.FC = () => {
             <div className="flex justify-end mt-6">
               <button
                 onClick={() => setShowManageModal(false)}
-                className="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors font-medium"
+                className="bg-gray-500 text-zinc-800 px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors font-medium"
               >
                 Close
               </button>
@@ -923,13 +1038,13 @@ const AllStaffPage: React.FC = () => {
                 <div className="flex gap-3">
                   <button
                     onClick={handleBulkAction}
-                    className="flex-1 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition-colors font-medium"
+                    className="flex-1 bg-red-500 text-red-500 py-2 rounded-lg hover:bg-red-600 transition-colors font-medium"
                   >
                     🗑️ Delete All
                   </button>
                   <button
                     onClick={() => setShowBulkActions(false)}
-                    className="flex-1 bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600 transition-colors font-medium"
+                    className="flex-1 bg-gray-500 text-zinc-800 py-2 rounded-lg hover:bg-gray-600 transition-colors font-medium"
                   >
                     Cancel
                   </button>
@@ -955,13 +1070,13 @@ const AllStaffPage: React.FC = () => {
                 <div className="flex gap-3">
                   <button
                     onClick={handleBulkAction}
-                    className="flex-1 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors font-medium"
+                    className="flex-1 bg-blue-600 text-emerald-700 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium border border-blue-700"
                   >
                     🏨 Update Hotel
                   </button>
                   <button
                     onClick={() => setShowBulkActions(false)}
-                    className="flex-1 bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600 transition-colors font-medium"
+                    className="flex-1 bg-gray-500 text-red-500 py-2 rounded-lg hover:bg-gray-600 transition-colors font-medium"
                   >
                     Cancel
                   </button>
@@ -987,13 +1102,13 @@ const AllStaffPage: React.FC = () => {
                 <div className="flex gap-3">
                   <button
                     onClick={handleBulkAction}
-                    className="flex-1 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition-colors font-medium"
+                    className="flex-1 bg-green-500 text-emerald-800 py-2 rounded-lg hover:bg-green-600 transition-colors font-medium"
                   >
                     📊 Update Status
                   </button>
                   <button
                     onClick={() => setShowBulkActions(false)}
-                    className="flex-1 bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600 transition-colors font-medium"
+                    className="flex-1 bg-gray-500 text-red-600 py-2 rounded-lg hover:bg-gray-600 transition-colors font-medium"
                   >
                     Cancel
                   </button>
