@@ -22,7 +22,7 @@ export const filterStaff = (
     // Basic search
     const matchesSearch = person.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          person.phone.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         person.designation.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         person.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          person.batchNo.toLowerCase().includes(searchTerm.toLowerCase())
     
     // Filter by visa type
@@ -76,9 +76,6 @@ export const filterStaff = (
     }
 
     // Advanced search filters
-    const matchesDepartment = searchFilters.department === '' || 
-      person.department.toLowerCase().includes(searchFilters.department.toLowerCase())
-    
     const matchesAdvancedPassportExpireDate = searchFilters.passportExpireDate === '' || 
       person.passportExpireDate === searchFilters.passportExpireDate
     
@@ -88,7 +85,7 @@ export const filterStaff = (
     const matchesAdvancedStatus = searchFilters.status === '' || person.status === searchFilters.status
     
     return matchesSearch && matchesVisa && matchesHotel && matchesExpireDate &&
-           matchesPassportExpireDate && matchesDepartment && matchesAdvancedPassportExpireDate && 
+           matchesPassportExpireDate && matchesAdvancedPassportExpireDate && 
            matchesCardNumber && matchesAdvancedStatus
   })
 }
@@ -118,7 +115,7 @@ export const generateSampleData = (currentStaff: Staff[], hotels: string[]): Sta
       sl: Math.max(...currentStaff.map(s => s.sl), 0) + 1,
       batchNo: 'B001',
       name: 'Ahmed Hassan',
-      designation: 'Manager',
+      department: 'Manager',
       visaType: 'Employment' as const,
       cardNo: 'EMP001',
       issueDate: '2027-01-01',
@@ -128,7 +125,6 @@ export const generateSampleData = (currentStaff: Staff[], hotels: string[]): Sta
       photo: '',
       remark: 'Senior manager',
       hotel: hotels[0] || 'Grand Plaza Hotel',
-      department: 'Management',
       salary: 8000,
       passportExpireDate: '2027-01-01'
     },
@@ -137,7 +133,7 @@ export const generateSampleData = (currentStaff: Staff[], hotels: string[]): Sta
       sl: Math.max(...currentStaff.map(s => s.sl), 0) + 2,
       batchNo: 'B002',
       name: 'Sarah Johnson',
-      designation: 'Receptionist',
+      department: 'Receptionist',
       visaType: 'Employment' as const,
       cardNo: 'EMP002',
       issueDate: '2027-02-01',
@@ -147,7 +143,6 @@ export const generateSampleData = (currentStaff: Staff[], hotels: string[]): Sta
       photo: '',
       remark: 'Front desk',
       hotel: hotels[0] || 'Grand Plaza Hotel',
-      department: 'Reception',
       salary: 4000,
       passportExpireDate: '2027-02-01'
     },
@@ -156,7 +151,7 @@ export const generateSampleData = (currentStaff: Staff[], hotels: string[]): Sta
       sl: Math.max(...currentStaff.map(s => s.sl), 0) + 3,
       batchNo: 'B003',
       name: 'Mohammed Ali',
-      designation: 'Chef',
+      department: 'Chef',
       visaType: 'Visit' as const,
       cardNo: 'VIS001',
       issueDate: '2027-03-01',
@@ -166,7 +161,6 @@ export const generateSampleData = (currentStaff: Staff[], hotels: string[]): Sta
       photo: '',
       remark: 'Expert in Arabic cuisine',
       hotel: hotels[1] || 'Ocean View Resort',
-      department: 'Kitchen',
       salary: 5000,
       passportExpireDate: '2027-03-01'
     }

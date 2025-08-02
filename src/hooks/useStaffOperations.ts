@@ -4,7 +4,7 @@ import { useStaff } from '../contexts/StaffContext'
 import { generateSampleData } from '../utils/staffUtils'
 
 export const useStaffOperations = () => {
-  const { staff, setStaff, hotels, departments } = useStaff()
+  const { staff, setStaff, hotels } = useStaff()
   const [batchError, setBatchError] = useState('')
 
   const addStaff = (newStaff: NewStaff) => {
@@ -19,7 +19,7 @@ export const useStaffOperations = () => {
     }
     setBatchError('')
 
-    // Only require name and designation - other fields are optional
+    // Only require name and department - other fields are optional
     if (newStaff.name.trim()) {
       const newId = Math.max(...staff.map(s => s.id), 0) + 1
       const newSl = Math.max(...staff.map(s => s.sl), 0) + 1
@@ -28,7 +28,7 @@ export const useStaffOperations = () => {
         id: newId,
         sl: newSl,
         name: newStaff.name.trim(),
-        designation: newStaff.designation.trim() || 'Not Specified'
+        department: newStaff.department.trim() || 'Not Specified'
       }
       setStaff([...staff, staffToAdd])
       return true
@@ -104,7 +104,6 @@ export const useStaffOperations = () => {
     staff,
     setStaff,
     hotels,
-    departments,
     batchError,
     setBatchError,
     addStaff,

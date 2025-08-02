@@ -209,7 +209,7 @@ const StaffList: React.FC<StaffListProps> = ({
                         <h3 className="text-lg font-bold text-slate-900 truncate group-hover:text-slate-700 transition-colors">
                           {person.name}
                         </h3>
-                        <p className="text-sm text-slate-600 font-medium truncate">{person.designation || 'No designation'}</p>
+                        <p className="text-sm text-slate-600 font-medium truncate">{person.department || 'No department'}</p>
                         {person.batchNo && (
                           <div className="mt-2">
                             <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
@@ -269,19 +269,6 @@ const StaffList: React.FC<StaffListProps> = ({
                           <p className="text-xs text-slate-500 uppercase tracking-wide font-semibold">Hotel</p>
                           <p className="text-sm font-semibold text-slate-900 truncate">
                             {person.hotel || 'Unassigned'}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3 p-3 bg-blue-50 rounded-xl border border-blue-100">
-                        <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
-                          <svg className="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0H8m8 0v2a2 2 0 01-2 2H10a2 2 0 01-2-2V6" />
-                          </svg>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs text-slate-500 uppercase tracking-wide font-semibold">Department</p>
-                          <p className="text-sm font-semibold text-slate-900 truncate">
-                            {person.department || 'No department'}
                           </p>
                         </div>
                       </div>
@@ -412,7 +399,7 @@ const StaffList: React.FC<StaffListProps> = ({
                   {/* Employee Profile */}
                   <div className="mb-3">
                     <h3 className="text-base font-bold text-slate-900 mb-1 truncate">{person.name}</h3>
-                    <p className="text-xs text-slate-600 font-medium truncate">{person.designation || 'No designation'}</p>
+                    <p className="text-xs text-slate-600 font-medium truncate">{person.department || 'No department'}</p>
                     {person.batchNo && (
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 mt-1">
                         B{person.batchNo}

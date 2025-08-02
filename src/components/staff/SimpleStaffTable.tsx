@@ -42,7 +42,7 @@ const SimpleStaffTable: React.FC<SimpleStaffTableProps> = ({ staff }) => {
                   <div className="text-sm text-gray-500">#{person.sl}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {person.designation || 'No designation'}
+                  {person.department || 'No department'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {person.hotel || 'Unassigned'}

@@ -5,7 +5,7 @@ interface Staff {
   sl: number
   batchNo: string
   name: string
-  designation: string
+  department: string
   visaType: 'Employment' | 'Visit' | ''
   cardNo: string
   issueDate: string
@@ -15,7 +15,6 @@ interface Staff {
   photo: string
   remark: string
   hotel: string
-  department: string
   salary: number
   passportExpireDate: string
 }
@@ -71,9 +70,9 @@ const StaffForm: React.FC<StaffFormProps> = ({
           />
           <input
             type="text"
-            placeholder="💼 Designation"
-            value={staff.designation}
-            onChange={(e) => onUpdate('designation', e.target.value)}
+            placeholder="💼 Department"
+            value={staff.department}
+            onChange={(e) => onUpdate('department', e.target.value)}
             className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
           />
           <select

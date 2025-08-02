@@ -5,7 +5,7 @@ interface Staff {
   sl: number
   batchNo: string
   name: string
-  designation: string
+  department: string
   visaType: 'Employment' | 'Visit' | ''
   cardNo: string
   issueDate: string
@@ -15,7 +15,6 @@ interface Staff {
   photo: string
   remark: string
   hotel: string
-  department: string
   salary: number
   passportExpireDate: string
 }
@@ -62,7 +61,7 @@ const StaffList: React.FC<StaffListProps> = ({
                   />
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-lg text-gray-900 truncate">{person.name}</h3>
-                    <p className="text-sm text-blue-600 font-semibold truncate">{person.designation || 'No designation'}</p>
+                    <p className="text-sm text-blue-600 font-semibold truncate">{person.department || 'No department'}</p>
                     {person.batchNo && (
                       <p className="text-xs text-gray-500 truncate">Batch: {person.batchNo}</p>
                     )}

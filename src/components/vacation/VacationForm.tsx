@@ -135,7 +135,7 @@ const VacationForm: React.FC<VacationFormProps> = ({ staff, onSubmit, onCancel, 
               <option value="">Choose staff member</option>
               {staff.filter(s => s.status === 'Working').map(person => (
                 <option key={person.id} value={person.id}>
-                  {person.name} - {person.designation}
+                  {person.name} - {person.department}
                 </option>
               ))}
             </select>

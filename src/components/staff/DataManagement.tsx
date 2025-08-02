@@ -6,7 +6,6 @@ interface DataManagementProps {
   onExportJSON: () => void
   onImportExcel: (event: React.ChangeEvent<HTMLInputElement>) => void
   onImportJSON: (event: React.ChangeEvent<HTMLInputElement>) => void
-  onGenerateSample: () => void
   onAddStaff: () => void
   onManage: () => void
   onViewExited: () => void
@@ -18,7 +17,6 @@ const DataManagement: React.FC<DataManagementProps> = ({
   onExportJSON,
   onImportExcel,
   onImportJSON,
-  onGenerateSample,
   onAddStaff,
   onManage,
   onViewExited

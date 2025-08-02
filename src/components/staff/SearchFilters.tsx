@@ -65,7 +65,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mb-4">
         <input
           type="text"
-          placeholder="🔍 Search by name, phone, designation, batch..."
+          placeholder="🔍 Search by name, phone, department, batch..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
@@ -115,14 +115,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
       {advancedSearch && (
         <div className="border-t border-gray-200 pt-4">
           <h3 className="text-sm font-semibold text-gray-700 mb-3">🔧 Advanced Filters</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <input
-              type="text"
-              placeholder="🏢 Department"
-              value={searchFilters.department}
-              onChange={(e) => setSearchFilters({...searchFilters, department: e.target.value})}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <select
               value={searchFilters.status}
               onChange={(e) => setSearchFilters({...searchFilters, status: e.target.value})}

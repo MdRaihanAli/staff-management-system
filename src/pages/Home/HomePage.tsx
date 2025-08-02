@@ -16,28 +16,17 @@ const HomePage: React.FC<HomePageProps> = ({ staff }) => {
     if (!acc[person.hotel]) {
       acc[person.hotel] = {
         total: 0,
-        working: 0,
-        departments: new Set<string>(),
-        departmentCounts: {} as Record<string, number>
+        working: 0
       }
     }
     acc[person.hotel].total++
     if (person.status === 'Working') {
       acc[person.hotel].working++
     }
-    if (person.department) {
-      acc[person.hotel].departments.add(person.department)
-      if (!acc[person.hotel].departmentCounts[person.department]) {
-        acc[person.hotel].departmentCounts[person.department] = 0
-      }
-      acc[person.hotel].departmentCounts[person.department]++
-    }
     return acc
   }, {} as Record<string, { 
     total: number; 
-    working: number; 
-    departments: Set<string>; 
-    departmentCounts: Record<string, number> 
+    working: number
   }>)
 
   // Get visa expiry alerts
@@ -256,22 +245,6 @@ const HomePage: React.FC<HomePageProps> = ({ staff }) => {
                       <span className="text-sm text-blue-100">Total Staff:</span>
                       <span className="font-medium text-white">{stats.total}</span>
                     </div>
-                    
-                    {Object.keys(stats.departmentCounts).length > 0 && (
-                      <div className="mt-4 pt-3 border-t border-white/20">
-                        <p className="text-xs font-medium text-blue-100 mb-2">All Departments:</p>
-                        <div className="space-y-1">
-                          {Object.entries(stats.departmentCounts)
-                            .sort(([,a], [,b]) => b - a)
-                            .map(([dept, count]) => (
-                              <div key={dept} className="flex justify-between text-xs">
-                                <span className="text-blue-100 truncate">{dept || 'Unassigned'}</span>
-                                <span className="font-medium text-white bg-white/20 px-2 py-0.5 rounded-full">{count}</span>
-                              </div>
-                            ))}
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
               );
@@ -292,15 +265,6 @@ const HomePage: React.FC<HomePageProps> = ({ staff }) => {
             <div className="text-blue-100 font-medium">Active Hotels</div>
             <div className="mt-3 bg-blue-500/30 rounded-full h-1 w-full">
               <div className="bg-blue-300 h-1 rounded-full" style={{width: '75%'}}></div>
-            </div>
-          </div>
-          <div className="bg-gradient-to-br from-green-600 to-green-700 p-6 rounded-xl text-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-            <div className="text-4xl font-bold text-white mb-2">
-              {new Set(staff.filter(s => s.department).map(s => s.department)).size}
-            </div>
-            <div className="text-green-100 font-medium">Departments</div>
-            <div className="mt-3 bg-green-500/30 rounded-full h-1 w-full">
-              <div className="bg-green-300 h-1 rounded-full" style={{width: '85%'}}></div>
             </div>
           </div>
           <div className="bg-gradient-to-br from-purple-600 to-purple-700 p-6 rounded-xl text-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">

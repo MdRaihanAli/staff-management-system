@@ -47,17 +47,8 @@ export const StaffProvider: React.FC<StaffProviderProps> = ({ children }) => {
     'Mountain Lodge', 
     'Beach Paradise Hotel'
   ])
-  const [departments, setDepartments] = useState<string[]>([
-    'Front Desk',
-    'Housekeeping', 
-    'Kitchen',
-    'Restaurant',
-    'Security',
-    'Maintenance',
-    'Reception'
-  ])
   
-  const [designations, setDesignations] = useState<string[]>([
+  const [departments, setDepartments] = useState<string[]>([
     'Front Desk Manager',
     'Receptionist',
     'Housekeeping Supervisor',
@@ -102,8 +93,6 @@ export const StaffProvider: React.FC<StaffProviderProps> = ({ children }) => {
     setHotels,
     departments,
     setDepartments,
-    designations,
-    setDesignations,
     loadRealData
   }
 
