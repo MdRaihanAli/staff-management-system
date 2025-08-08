@@ -1,4 +1,5 @@
 export interface Staff {
+  _id?: string  // MongoDB ObjectId
   id: number
   sl: number
   batchNo: string
@@ -53,4 +54,10 @@ export interface StaffContextType {
   departments: string[]
   setDepartments: React.Dispatch<React.SetStateAction<string[]>>
   loadRealData: () => Promise<boolean>
+  saveToJsonFile: () => void
+  loadFromJsonFile: () => Promise<boolean>
+  hasUnsavedChanges: boolean
+  addStaffToAPI: (staffData: any) => Promise<Staff>
+  updateStaffInAPI: (id: string, staffData: any) => Promise<Staff>
+  deleteStaffFromAPI: (id: string) => Promise<void>
 }

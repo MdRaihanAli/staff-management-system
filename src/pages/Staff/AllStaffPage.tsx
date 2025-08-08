@@ -132,17 +132,6 @@ const AllStaffPage: React.FC = () => {
     filterPassportExpireDate
   )
 
-  // Export helper functions - export based on current view
-  const getExportData = () => {
-    if (showExitedStaff) {
-      // When viewing exited staff, export only exited staff
-      return staff.filter(person => person.status === 'Exited')
-    } else {
-      // When viewing all staff, export only non-exited staff (Working and Jobless)
-      return staff.filter(person => person.status !== 'Exited')
-    }
-  }
-
   const handleExportExcel = () => {
     // Export filtered data instead of all data
     const exportData = filteredStaff
