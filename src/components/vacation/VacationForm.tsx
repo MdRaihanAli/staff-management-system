@@ -10,8 +10,29 @@ interface VacationFormProps {
 }
 
 const VacationForm: React.FC<VacationFormProps> = ({ staff, onSubmit, onCancel, editingVacation }) => {
+  // Helper function to get a valid staff ID
+  const getValidStaffId = (targetId?: number): number => {
+    if (!targetId) return 0
+    
+    // Check if the target ID exists in current staff list
+    const staffExists = staff.find(s => s.id === targetId)
+    if (staffExists) return targetId
+    
+    // If editing vacation has invalid staff ID, try to find by name
+    if (editingVacation?.staffName) {
+      const staffByName = staff.find(s => s.name === editingVacation.staffName)
+      if (staffByName) {
+        console.warn(`⚠️ Staff ID ${targetId} not found, using ID ${staffByName.id} for ${editingVacation.staffName}`)
+        return staffByName.id
+      }
+    }
+    
+    console.warn(`⚠️ Could not find valid staff ID for ${targetId}, defaulting to 0`)
+    return 0
+  }
+
   const [formData, setFormData] = useState<NewVacationRequest>({
-    staffId: editingVacation?.staffId || 0,
+    staffId: getValidStaffId(editingVacation?.staffId),
     startDate: editingVacation?.startDate || '',
     endDate: editingVacation?.endDate || '',
     reason: editingVacation?.reason || '',

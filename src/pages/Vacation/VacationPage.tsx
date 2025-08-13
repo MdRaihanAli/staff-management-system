@@ -114,6 +114,10 @@ const VacationPage: React.FC = () => {
     
     if (!staffMember) {
       console.error('❌ Staff member not found for ID:', updatedVacation.staffId)
+      
+      // Show a helpful error message to the user
+      const allStaffIds = staff.map(s => s.id).join(', ')
+      alert(`Staff member with ID ${updatedVacation.staffId} not found.\n\nAvailable staff IDs: ${allStaffIds.substring(0, 200)}${allStaffIds.length > 200 ? '...' : ''}\n\nPlease select a different staff member.`)
       return
     }
 
