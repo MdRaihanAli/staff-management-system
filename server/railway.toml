@@ -1,0 +1,11 @@
+version: 2
+services:
+  api:
+    source: .
+    domains:
+      - staff-management-api.up.railway.app
+    variables:
+      NODE_ENV: production
+      PORT: ${{ PORT }}
+      MONGODB_URI: ${{ MONGODB_URI }}
+      DATABASE_NAME: staff_management

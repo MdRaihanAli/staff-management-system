@@ -4,6 +4,7 @@
   "description": "MongoDB-based REST API server for Staff Management System",
   "main": "server-new.js",
   "scripts": {
+    "build": "echo 'No build step required for Node.js server'",
     "start": "node server-new.js",
     "dev": "nodemon server-new.js",
     "test": "node -e \"console.log('Server test - TODO: Add proper tests')\"",

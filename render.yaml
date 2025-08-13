@@ -1,0 +1,23 @@
+# Render Deployment Configuration
+# This file tells Render how to build and run your application
+
+# Build settings
+buildCommand: cd server && npm install
+startCommand: cd server && node server-new.js
+
+# Environment
+runtime: node
+
+# Service settings
+type: web
+region: oregon  # You can change this to your preferred region
+plan: free      # Free plan to start with
+
+# Health check
+healthCheckPath: /api/health
+
+# Auto-deploy
+autoDeploy: true
+
+# Node.js version
+nodeVersion: 18

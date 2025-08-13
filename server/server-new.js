@@ -2,12 +2,15 @@ const express = require('express');
 const cors = require('cors');
 const { MongoClient, ObjectId } = require('mongodb');
 
+// Load environment variables
+require('dotenv').config();
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // MongoDB configuration
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017';
-const DATABASE_NAME = 'staff_management';
+const DATABASE_NAME = process.env.DATABASE_NAME || 'staff_management';
 
 let db;
 let client;
@@ -17,15 +20,39 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Enhanced CORS configuration
+const allowedOrigins = [
+  'http://localhost:5173',  // Vite dev server
+  'http://localhost:5174',  // Alternative Vite port
+  'http://localhost:3000',  // This server
+  'http://127.0.0.1:5173',  // Alternative localhost
+  'http://127.0.0.1:5174',  
+  'http://127.0.0.1:3000',
+];
+
+// Add production origins if environment variables are set
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
+if (process.env.PRODUCTION_URL) {
+  allowedOrigins.push(process.env.PRODUCTION_URL);
+}
+
 app.use(cors({
-  origin: [
-    'http://localhost:5173',  // Vite dev server
-    'http://localhost:5174',  // Alternative Vite port
-    'http://localhost:3000',  // This server
-    'http://127.0.0.1:5173',  // Alternative localhost
-    'http://127.0.0.1:5174',  
-    'http://127.0.0.1:3000',
-  ],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin) || process.env.NODE_ENV === 'development') {
+      return callback(null, true);
+    }
+    
+    // In production, allow any HTTPS origin for now (you can restrict this later)
+    if (process.env.NODE_ENV === 'production' && origin.startsWith('https://')) {
+      return callback(null, true);
+    }
+    
+    return callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
@@ -124,6 +151,22 @@ const transformStaffDocument = (doc) => {
     updatedAt: doc.updatedAt || new Date()
   };
 };
+
+// Root endpoint for Render deployment verification
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Staff Management API Server is running',
+    version: '2.0',
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      health: '/api/health',
+      staff: '/api/staff',
+      vacations: '/api/vacations',
+      test: '/api/test'
+    }
+  });
+});
 
 // Test endpoint
 app.get('/api/test', (req, res) => {

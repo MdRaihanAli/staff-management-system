@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "name": "staff-management-api",
+  "builds": [
+    {
+      "src": "server-new.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/server-new.js"
+    }
+  ],
+  "env": {
+    "MONGODB_URI": "@mongodb_uri",
+    "DATABASE_NAME": "staff_management",
+    "NODE_ENV": "production"
+  }
+}
