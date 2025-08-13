@@ -1,35 +1,30 @@
-// Environment-aware API configuration
-const getApiBaseUrl = () => {
-  // Check for environment variable first
-  if (import.meta.env.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL;
-  }
-  
-  // Fallback logic
-  if (import.meta.env.PROD) {
-    // Production fallback - your actual Render URL
-    return 'https://staff-management-api-hzq0.onrender.com/api';
-  }
-  
-  // Development default
-  return 'http://localhost:3000/api';
-};
+// FIXED - Production API URL hardcoded
+const API_BASE_URL = 'https://staff-management-api-hzq0.onrender.com/api';
 
-const API_BASE_URL = getApiBaseUrl();
-
-// Log the API URL in development for debugging
-if (import.meta.env.DEV) {
-  console.log('🔗 API Base URL:', API_BASE_URL);
-}
+console.log('🔗 API Base URL (PRODUCTION):', API_BASE_URL);
 
 class StaffAPI {
   // Staff API calls
   static async getAllStaff() {
-    const response = await fetch(`${API_BASE_URL}/staff`);
-    if (!response.ok) throw new Error('Failed to fetch staff');
-    const result = await response.json();
-    // Handle different response formats from external server
-    return result.data || result;
+    try {
+      console.log('📡 Fetching staff from:', `${API_BASE_URL}/staff`);
+      const response = await fetch(`${API_BASE_URL}/staff`);
+      console.log('📊 Response status:', response.status, response.statusText);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ API Error:', errorText);
+        throw new Error(`Failed to fetch staff: ${response.status} ${errorText}`);
+      }
+      
+      const result = await response.json();
+      console.log('✅ Staff data received:', result.data?.length || result.length, 'records');
+      // Handle different response formats from external server
+      return result.data || result;
+    } catch (error) {
+      console.error('🚨 Error fetching staff:', error);
+      throw error;
+    }
   }
 
   static async getStaff(id: string) {
@@ -98,10 +93,24 @@ class StaffAPI {
 
   // Hotels API calls
   static async getHotels() {
-    const response = await fetch(`${API_BASE_URL}/hotels`);
-    if (!response.ok) throw new Error('Failed to fetch hotels');
-    const result = await response.json();
-    return result.data || result;
+    try {
+      console.log('📡 Fetching hotels from:', `${API_BASE_URL}/hotels`);
+      const response = await fetch(`${API_BASE_URL}/hotels`);
+      console.log('📊 Hotels response status:', response.status, response.statusText);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Hotels API Error:', errorText);
+        throw new Error(`Failed to fetch hotels: ${response.status} ${errorText}`);
+      }
+      
+      const result = await response.json();
+      console.log('✅ Hotels data received:', result.data?.length || result.length, 'items');
+      return result.data || result;
+    } catch (error) {
+      console.error('🚨 Error fetching hotels:', error);
+      throw error;
+    }
   }
 
   static async addHotel(name: string) {
@@ -126,10 +135,24 @@ class StaffAPI {
 
   // Companies API calls
   static async getCompanies() {
-    const response = await fetch(`${API_BASE_URL}/companies`);
-    if (!response.ok) throw new Error('Failed to fetch companies');
-    const result = await response.json();
-    return result.data || result;
+    try {
+      console.log('📡 Fetching companies from:', `${API_BASE_URL}/companies`);
+      const response = await fetch(`${API_BASE_URL}/companies`);
+      console.log('📊 Companies response status:', response.status, response.statusText);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Companies API Error:', errorText);
+        throw new Error(`Failed to fetch companies: ${response.status} ${errorText}`);
+      }
+      
+      const result = await response.json();
+      console.log('✅ Companies data received:', result.data?.length || result.length, 'items');
+      return result.data || result;
+    } catch (error) {
+      console.error('🚨 Error fetching companies:', error);
+      throw error;
+    }
   }
 
   static async addCompany(name: string) {
@@ -154,10 +177,24 @@ class StaffAPI {
 
   // Departments API calls
   static async getDepartments() {
-    const response = await fetch(`${API_BASE_URL}/departments`);
-    if (!response.ok) throw new Error('Failed to fetch departments');
-    const result = await response.json();
-    return result.data || result;
+    try {
+      console.log('📡 Fetching departments from:', `${API_BASE_URL}/departments`);
+      const response = await fetch(`${API_BASE_URL}/departments`);
+      console.log('📊 Departments response status:', response.status, response.statusText);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Departments API Error:', errorText);
+        throw new Error(`Failed to fetch departments: ${response.status} ${errorText}`);
+      }
+      
+      const result = await response.json();
+      console.log('✅ Departments data received:', result.data?.length || result.length, 'items');
+      return result.data || result;
+    } catch (error) {
+      console.error('🚨 Error fetching departments:', error);
+      throw error;
+    }
   }
 
   static async addDepartment(name: string) {

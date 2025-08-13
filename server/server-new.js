@@ -21,12 +21,6 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Enhanced CORS configuration
 const allowedOrigins = [
-  'http://localhost:5173',  // Vite dev server
-  'http://localhost:5174',  // Alternative Vite port
-  'http://localhost:3000',  // This server
-  'http://127.0.0.1:5173',  // Alternative localhost
-  'http://127.0.0.1:5174',  
-  'http://127.0.0.1:3000',
   'https://fanciful-cendol-4eb10b.netlify.app', // Netlify production URL
 ];
 
