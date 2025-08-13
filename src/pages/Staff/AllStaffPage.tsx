@@ -13,7 +13,6 @@ import DataManagement from '../../components/staff/DataManagement'
 import SearchFilters from '../../components/staff/SearchFilters'
 import StaffList from '../../components/staff/StaffList'
 import StaffForm from '../../components/staff/StaffForm'
-import DebugStaffData from '../../components/DebugStaffData'
 
 const AllStaffPage: React.FC = () => {
   const { 

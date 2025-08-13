@@ -7,7 +7,7 @@ import type { VacationRequest, VacationFilters, NewVacationRequest } from '../..
 
 const VacationPage: React.FC = () => {
   const { staff } = useStaff()
-  const { vacations, loading, addVacationRequest, updateVacationRequest, deleteVacationRequest, getVacationStats } = useVacations()
+  const { vacations, addVacationRequest, updateVacationRequest, deleteVacationRequest, getVacationStats } = useVacations()
   
   const [showForm, setShowForm] = useState(false)
   const [editingVacation, setEditingVacation] = useState<VacationRequest | null>(null)
