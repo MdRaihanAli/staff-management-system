@@ -388,6 +388,32 @@ app.post('/api/staff/bulk', async (req, res) => {
         sendResponse(res, { modifiedCount: result.modifiedCount }, `Updated status for ${result.modifiedCount} staff members`);
         break;
         
+      case 'import':
+        // Bulk import staff data
+        const staffToImport = data.staff || [];
+        if (!Array.isArray(staffToImport) || staffToImport.length === 0) {
+          return sendError(res, 'No staff data provided for import', 400);
+        }
+        
+        // Generate SL numbers for new staff
+        const lastStaff = await db.collection('staff').findOne({}, { sort: { sl: -1 } });
+        let nextSl = lastStaff ? (lastStaff.sl || 0) + 1 : 1;
+        
+        const newStaffData = staffToImport.map((staff, index) => ({
+          ...staff,
+          sl: staff.sl || (nextSl + index),
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }));
+        
+        result = await db.collection('staff').insertMany(newStaffData);
+        console.log(`✅ Bulk imported ${result.insertedCount} staff members`);
+        sendResponse(res, { 
+          insertedCount: result.insertedCount,
+          insertedIds: result.insertedIds
+        }, `Successfully imported ${result.insertedCount} staff members`);
+        break;
+        
       default:
         return sendError(res, 'Invalid bulk action', 400);
     }
