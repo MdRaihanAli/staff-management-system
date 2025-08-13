@@ -221,6 +221,25 @@ const AllStaffPage: React.FC = () => {
     exportToJSON(exportData)
   }
 
+  // Async wrapper functions for import operations
+  const handleImportExcel = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      await importFromExcel(event, staff, setStaff)
+    } catch (error) {
+      console.error('Error importing Excel file:', error)
+      alert('Error importing Excel file. Please try again.')
+    }
+  }
+
+  const handleImportJSON = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      await importFromJSON(event, staff, setStaff)
+    } catch (error) {
+      console.error('Error importing JSON file:', error)
+      alert('Error importing JSON file. Please try again.')
+    }
+  }
+
   // Pagination calculations
   const totalPages = Math.ceil(filteredStaff.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
@@ -460,8 +479,8 @@ const AllStaffPage: React.FC = () => {
               onExportExcel={handleExportExcel}
               onExportWord={handleExportWord}
               onExportJSON={handleExportJSON}
-              onImportExcel={(event) => importFromExcel(event, staff, setStaff)}
-              onImportJSON={(event) => importFromJSON(event, staff, setStaff)}
+              onImportExcel={handleImportExcel}
+              onImportJSON={handleImportJSON}
               onAddStaff={() => setShowAddForm(true)}
               onManage={() => setShowManageModal(true)}
               onViewExited={() => setShowExitedStaff(false)}
@@ -648,8 +667,8 @@ const AllStaffPage: React.FC = () => {
               onExportExcel={handleExportExcel}
               onExportWord={handleExportWord}
               onExportJSON={handleExportJSON}
-              onImportExcel={(event) => importFromExcel(event, staff, setStaff)}
-              onImportJSON={(event) => importFromJSON(event, staff, setStaff)}
+              onImportExcel={handleImportExcel}
+              onImportJSON={handleImportJSON}
               onAddStaff={() => setShowAddForm(true)}
               onManage={() => setShowManageModal(true)}
               onViewExited={() => setShowExitedStaff(true)}

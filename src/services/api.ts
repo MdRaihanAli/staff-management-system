@@ -92,6 +92,10 @@ class StaffAPI {
     return this.bulkOperation('updateStatus', ids, { status });
   }
 
+  static async bulkImport(staffData: any[]) {
+    return this.bulkOperation('import', [], { staff: staffData });
+  }
+
   // Hotels API calls
   static async getHotels() {
     const response = await fetch(`${API_BASE_URL}/hotels`);

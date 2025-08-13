@@ -2,6 +2,7 @@ import * as XLSX from 'xlsx'
 import { Document, Packer, Paragraph, Table, TableCell, TableRow, HeadingLevel } from 'docx'
 import { saveAs } from 'file-saver'
 import type { Staff } from '../types/staff'
+import StaffAPI from '../services/api'
 
 // Export to Excel
 export const exportToExcel = (staff: Staff[]) => {
@@ -96,7 +97,7 @@ export const exportToJSON = (staff: Staff[]) => {
 }
 
 // Import from JSON
-export const importFromJSON = (
+export const importFromJSON = async (
   event: React.ChangeEvent<HTMLInputElement>,
   currentStaff: Staff[],
   setStaff: React.Dispatch<React.SetStateAction<Staff[]>>
@@ -104,7 +105,7 @@ export const importFromJSON = (
   const file = event.target.files?.[0]
   if (file) {
     const reader = new FileReader()
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
         const data = JSON.parse(e.target?.result as string)
         if (Array.isArray(data)) {
@@ -145,27 +146,48 @@ export const importFromJSON = (
           }
           
           if (validStaff.length > 0) {
-            const newStaff = validStaff.map((item, index) => ({
-              id: Math.max(...currentStaff.map(s => s.id), 0) + index + 1,
-              sl: item.sl || Math.max(...currentStaff.map(s => s.sl), 0) + index + 1,
-              batchNo: item.batchNo || '',
-              name: item.name || '',
-              department: item.department || '',
-              company: item.company || '',
-              visaType: item.visaType || '',
-              cardNo: item.cardNo || '',
-              issueDate: item.issueDate || '',
-              expireDate: item.expireDate || '',
-              phone: item.phone || '',
-              status: item.status || 'Working',
-              photo: item.photo || '',
-              remark: item.remark || '',
-              hotel: item.hotel || '',
-              salary: item.salary || 0,
-              passportExpireDate: item.passportExpireDate || ''
-            }))
-            setStaff([...currentStaff, ...newStaff])
-            alert(`Successfully imported ${newStaff.length} staff members!${duplicateBatches.length > 0 ? ` (${duplicateBatches.length} duplicates skipped)` : ''}`)
+            try {
+              console.log('🚀 Starting JSON import process...')
+              console.log('📊 Valid staff to import:', validStaff.length)
+              
+              // Prepare staff data for MongoDB import
+              const newStaff = validStaff.map((item) => ({
+                batchNo: item.batchNo || '',
+                name: item.name || '',
+                department: item.department || '',
+                company: item.company || '',
+                visaType: item.visaType || '',
+                cardNo: item.cardNo || '',
+                issueDate: item.issueDate || '',
+                expireDate: item.expireDate || '',
+                phone: item.phone || '',
+                status: item.status || 'Working',
+                photo: item.photo || '',
+                remark: item.remark || '',
+                hotel: item.hotel || '',
+                salary: item.salary || 0,
+                passportExpireDate: item.passportExpireDate || ''
+              }))
+              
+              console.log('📤 Prepared staff data:', newStaff)
+              
+              // Save to MongoDB via API
+              console.log('🔄 Calling StaffAPI.bulkImport...')
+              const importResult = await StaffAPI.bulkImport(newStaff)
+              console.log('✅ Import API response:', importResult)
+              
+              // Refresh the staff list from MongoDB
+              console.log('🔄 Refreshing staff list from MongoDB...')
+              const refreshedStaff = await StaffAPI.getAllStaff()
+              console.log('📋 Refreshed staff count:', refreshedStaff?.length || 0)
+              setStaff(refreshedStaff || [])
+              
+              alert(`✅ Successfully imported ${newStaff.length} staff members to MongoDB!${duplicateBatches.length > 0 ? ` (${duplicateBatches.length} duplicates skipped)` : ''}`)
+            } catch (error) {
+              console.error('❌ Error importing to MongoDB:', error)
+              const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+              alert(`❌ Error saving imported data to database: ${errorMessage}. Please try again.`)
+            }
           }
         }
       } catch (error) {
@@ -177,7 +199,7 @@ export const importFromJSON = (
 }
 
 // Import from Excel
-export const importFromExcel = (
+export const importFromExcel = async (
   event: React.ChangeEvent<HTMLInputElement>,
   currentStaff: Staff[],
   setStaff: React.Dispatch<React.SetStateAction<Staff[]>>
@@ -185,7 +207,7 @@ export const importFromExcel = (
   const file = event.target.files?.[0]
   if (file) {
     const reader = new FileReader()
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
         const data = new Uint8Array(e.target?.result as ArrayBuffer)
         const workbook = XLSX.read(data, { type: 'array' })
@@ -229,28 +251,48 @@ export const importFromExcel = (
         }
         
         if (validStaff.length > 0) {
-          const newStaff = validStaff.map((item: any, index) => ({
-            id: Math.max(...currentStaff.map(s => s.id), 0) + index + 1,
-            sl: item['SL'] || item.sl || Math.max(...currentStaff.map(s => s.sl), 0) + index + 1,
-            batchNo: item.extractedBatchNo,
-            name: item['Name'] || item.name || '',
-            department: item['Department'] || item.department || '',
-            company: item['Company'] || item.company || '',
-            visaType: item['Visa Type'] || item.visaType || '',
-            cardNo: item['Card No'] || item.cardNo || '',
-            issueDate: item['Issue Date'] || item.issueDate || '',
-            expireDate: item['Expire Date'] || item.expireDate || '',
-            phone: item['Phone'] || item.phone || '',
-            status: item['Status'] || item.status || 'Working',
-            photo: item['Photo'] || item.photo || '',
-            remark: item['Remark'] || item.remark || '',
-            hotel: item['Hotel'] || item.hotel || '',
-            salary: item['Salary'] || item.salary || 0,
-            passportExpireDate: item['Passport Expire Date'] || item.passportExpireDate || ''
-          }))
-          
-          setStaff([...currentStaff, ...newStaff])
-          alert(`Successfully imported ${newStaff.length} staff members from Excel!${duplicateBatches.length > 0 ? ` (${duplicateBatches.length} duplicates skipped)` : ''}`)
+          try {
+            console.log('🚀 Starting Excel import process...')
+            console.log('📊 Valid staff to import:', validStaff.length)
+            
+            // Prepare staff data for MongoDB import
+            const newStaff = validStaff.map((item: any) => ({
+              batchNo: item.extractedBatchNo,
+              name: item['Name'] || item.name || '',
+              department: item['Department'] || item.department || '',
+              company: item['Company'] || item.company || '',
+              visaType: item['Visa Type'] || item.visaType || '',
+              cardNo: item['Card No'] || item.cardNo || '',
+              issueDate: item['Issue Date'] || item.issueDate || '',
+              expireDate: item['Expire Date'] || item.expireDate || '',
+              phone: item['Phone'] || item.phone || '',
+              status: item['Status'] || item.status || 'Working',
+              photo: item['Photo'] || item.photo || '',
+              remark: item['Remark'] || item.remark || '',
+              hotel: item['Hotel'] || item.hotel || '',
+              salary: item['Salary'] || item.salary || 0,
+              passportExpireDate: item['Passport Expire Date'] || item.passportExpireDate || ''
+            }))
+            
+            console.log('📤 Prepared staff data:', newStaff)
+            
+            // Save to MongoDB via API
+            console.log('🔄 Calling StaffAPI.bulkImport...')
+            const importResult = await StaffAPI.bulkImport(newStaff)
+            console.log('✅ Import API response:', importResult)
+            
+            // Refresh the staff list from MongoDB
+            console.log('🔄 Refreshing staff list from MongoDB...')
+            const refreshedStaff = await StaffAPI.getAllStaff()
+            console.log('📋 Refreshed staff count:', refreshedStaff?.length || 0)
+            setStaff(refreshedStaff || [])
+            
+            alert(`✅ Successfully imported ${newStaff.length} staff members to MongoDB from Excel!${duplicateBatches.length > 0 ? ` (${duplicateBatches.length} duplicates skipped)` : ''}`)
+          } catch (error) {
+            console.error('❌ Error importing to MongoDB:', error)
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+            alert(`❌ Error saving imported data to database: ${errorMessage}. Please try again.`)
+          }
         }
       } catch (error) {
         alert('Error importing Excel file. Please check the file format.')

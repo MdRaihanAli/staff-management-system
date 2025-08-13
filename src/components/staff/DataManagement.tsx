@@ -4,8 +4,8 @@ interface DataManagementProps {
   onExportExcel: () => void
   onExportWord: () => void
   onExportJSON: () => void
-  onImportExcel: (event: React.ChangeEvent<HTMLInputElement>) => void
-  onImportJSON: (event: React.ChangeEvent<HTMLInputElement>) => void
+  onImportExcel: (event: React.ChangeEvent<HTMLInputElement>) => Promise<void>
+  onImportJSON: (event: React.ChangeEvent<HTMLInputElement>) => Promise<void>
   onAddStaff: () => void
   onManage: () => void
   onViewExited: () => void

@@ -338,13 +338,13 @@ app.post('/api/staff/bulk', async (req, res) => {
   try {
     const { action, ids, data } = req.body;
     
-    // Convert string IDs to ObjectIds where appropriate
-    const objectIds = ids.map(id => {
+    // Convert string IDs to ObjectIds where appropriate (only if ids exist)
+    const objectIds = ids ? ids.map(id => {
       if (ObjectId.isValid(id)) {
         return new ObjectId(id);
       }
       return id;
-    });
+    }) : [];
     
     let result;
     
@@ -390,7 +390,7 @@ app.post('/api/staff/bulk', async (req, res) => {
         
       case 'import':
         // Bulk import staff data
-        const staffToImport = data.staff || [];
+        const staffToImport = data || [];
         if (!Array.isArray(staffToImport) || staffToImport.length === 0) {
           return sendError(res, 'No staff data provided for import', 400);
         }
