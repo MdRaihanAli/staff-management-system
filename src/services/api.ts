@@ -207,24 +207,18 @@ class StaffAPI {
   }
 
   static async updateVacation(id: string, vacationData: any) {
-    console.log(`🔄 StaffAPI: Sending PUT request to /vacations/${id}`, vacationData);
-    
     const response = await fetch(`${API_BASE_URL}/vacations/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(vacationData)
     });
     
-    console.log(`📡 StaffAPI: Response status: ${response.status} ${response.statusText}`);
-    
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('❌ StaffAPI: Error response:', errorText);
       throw new Error(`Failed to update vacation request: ${response.status} ${errorText}`);
     }
     
     const result = await response.json();
-    console.log('✅ StaffAPI: Update successful:', result);
     return result.data || result;
   }
 
