@@ -22,6 +22,14 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 // Enhanced CORS configuration
 const allowedOrigins = [
   'https://fanciful-cendol-4eb10b.netlify.app', // Netlify production URL
+  'http://localhost:3000',                        // Local development
+  'http://localhost:5173',                        // Vite default port
+  'http://localhost:5174',                        // Vite alternative port
+  'http://localhost:5175',                        // Current dev port
+  'http://127.0.0.1:3000',                       // Alternative localhost
+  'http://127.0.0.1:5173',                       // Alternative localhost
+  'http://127.0.0.1:5174',                       // Alternative localhost
+  'http://127.0.0.1:5175',                       // Alternative localhost
 ];
 
 // Add production origins if environment variables are set
@@ -36,6 +44,11 @@ app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (mobile apps, curl, etc.)
     if (!origin) return callback(null, true);
+    
+    // Allow all localhost/127.0.0.1 origins during development
+    if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+      return callback(null, true);
+    }
     
     if (allowedOrigins.includes(origin) || process.env.NODE_ENV === 'development') {
       return callback(null, true);
