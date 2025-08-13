@@ -93,7 +93,7 @@ class StaffAPI {
   }
 
   static async bulkImport(staffData: any[]) {
-    return this.bulkOperation('import', [], { staff: staffData });
+    return this.bulkOperation('import', [], staffData);
   }
 
   // Hotels API calls

@@ -185,8 +185,25 @@ export const importFromJSON = async (
               alert(`✅ Successfully imported ${newStaff.length} staff members to MongoDB!${duplicateBatches.length > 0 ? ` (${duplicateBatches.length} duplicates skipped)` : ''}`)
             } catch (error) {
               console.error('❌ Error importing to MongoDB:', error)
-              const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-              alert(`❌ Error saving imported data to database: ${errorMessage}. Please try again.`)
+              
+              // Provide more specific error messages
+              let errorMessage = 'Unknown error occurred'
+              if (error instanceof Error) {
+                errorMessage = error.message
+                
+                // Handle specific error types
+                if (errorMessage.includes('duplicate key') || errorMessage.includes('E11000')) {
+                  errorMessage = 'Duplicate data detected. Some records may already exist in the database.'
+                } else if (errorMessage.includes('validation failed') || errorMessage.includes('required')) {
+                  errorMessage = 'Data validation failed. Please check that all required fields are filled.'
+                } else if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
+                  errorMessage = 'Network connection error. Please check your internet connection and try again.'
+                } else if (errorMessage.includes('Failed to perform bulk operation')) {
+                  errorMessage = 'Database operation failed. The JSON file may contain invalid data format or MongoDB conflicts.'
+                }
+              }
+              
+              alert(`❌ Error saving imported data to database: ${errorMessage}\n\nTip: If you downloaded this JSON from the app, try using the cleaned version or contact support.`)
             }
           }
         }
