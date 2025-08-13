@@ -20,13 +20,14 @@
 
 ## 🎯 Key Problem Solved
 
-**Original Issue**: "vacation management data why not save in mongodb. after refresh i can't see any information"
+**Original Issue**: "vacation management data why not save in mongodb. after refresh i can't see any information" + "i got some problem . when i impor json file or excel . it not save . after refress imported data not avable ."
 
 **Solution Implemented**:
 1. ✅ Complete MongoDB integration for vacation system
 2. ✅ Proper data persistence across page refreshes
 3. ✅ Full CRUD operations for vacation management
 4. ✅ Production deployment on Render + Netlify
+5. ✅ **NEW: Fixed import functionality - JSON/Excel imports now save to MongoDB**
 
 ## 🔧 Technical Configuration
 
@@ -79,6 +80,10 @@ Body: { startDate, endDate, reason, status }
 
 // Delete vacation
 DELETE /api/vacations/:id
+
+// Bulk import staff data (NEW)
+POST /api/staff/bulk
+Body: { action: "import", data: { staff: [staffArray] } }
 ```
 
 ## 🚀 Deployment Scripts Created

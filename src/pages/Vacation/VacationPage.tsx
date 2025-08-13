@@ -7,7 +7,7 @@ import type { VacationRequest, VacationFilters, NewVacationRequest } from '../..
 
 const VacationPage: React.FC = () => {
   const { staff } = useStaff()
-  const { vacations, addVacationRequest, updateVacationRequest, deleteVacationRequest, getVacationStats } = useVacations()
+  const { vacations, loading, addVacationRequest, updateVacationRequest, deleteVacationRequest, getVacationStats } = useVacations()
   
   const [showForm, setShowForm] = useState(false)
   const [editingVacation, setEditingVacation] = useState<VacationRequest | null>(null)
@@ -94,15 +94,28 @@ const VacationPage: React.FC = () => {
   }
 
   const handleEditVacation = (vacation: VacationRequest) => {
+    console.log('🖊️ Edit button clicked for vacation:', vacation)
     setEditingVacation(vacation)
     setShowForm(true)
+    console.log('📝 Form should now be shown with editingVacation set')
   }
 
   const handleUpdateVacation = async (updatedVacation: NewVacationRequest) => {
-    if (!editingVacation) return
+    console.log('🔄 handleUpdateVacation called with:', updatedVacation)
+    console.log('🔄 Current editingVacation:', editingVacation)
+    
+    if (!editingVacation) {
+      console.error('❌ No editingVacation found!')
+      return
+    }
 
     const staffMember = staff.find(s => s.id === updatedVacation.staffId)
-    if (!staffMember) return
+    console.log('👤 Found staff member:', staffMember)
+    
+    if (!staffMember) {
+      console.error('❌ Staff member not found for ID:', updatedVacation.staffId)
+      return
+    }
 
     const calculateDays = (start: string, end: string): number => {
       const startDate = new Date(start)
@@ -117,8 +130,11 @@ const VacationPage: React.FC = () => {
       staffBatch: staffMember.batchNo,
       totalDays: calculateDays(updatedVacation.startDate, updatedVacation.endDate)
     }
+    
+    console.log('📝 Updates to be sent:', updates)
 
     try {
+      console.log(`🚀 Calling updateVacationRequest with ID: ${editingVacation.id}`)
       await updateVacationRequest(editingVacation.id, updates)
       setShowForm(false)
       setEditingVacation(null)

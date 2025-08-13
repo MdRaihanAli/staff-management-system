@@ -1067,7 +1067,7 @@ const AllStaffPage: React.FC = () => {
                   />
                   <button
                     onClick={addHotel}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                    className="bg-purple-600 text-dark px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
                   >
                     Add
                   </button>
@@ -1101,7 +1101,7 @@ const AllStaffPage: React.FC = () => {
                   />
                   <button
                     onClick={addCompany}
-                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+                    className="bg-green-600 text-dark px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
                   >
                     Add
                   </button>
@@ -1135,7 +1135,7 @@ const AllStaffPage: React.FC = () => {
                   />
                   <button
                     onClick={addDepartment}
-                    className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
+                    className="bg-purple-600 text-dark px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
                   >
                     Add
                   </button>
@@ -1159,7 +1159,7 @@ const AllStaffPage: React.FC = () => {
             <div className="flex justify-end mt-6">
               <button
                 onClick={() => setShowManageModal(false)}
-                className="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors font-medium"
+                className="bg-gray-500 text-dark px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors font-medium"
               >
                 Close
               </button>

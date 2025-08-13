@@ -4,8 +4,20 @@ const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="bg-gradient-to-r from-blue-600 to-blue-800 text-white mt-auto border-t border-blue-700">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <footer 
+      className="bg-gradient-to-r from-blue-600 to-blue-800 text-white mt-auto border-t border-blue-700 relative overflow-hidden"
+      style={{
+        backgroundImage: `linear-gradient(rgba(37, 99, 235, 0.85), rgba(29, 78, 216, 0.9)), url('/vs4.png')`,
+        backgroundSize: 'contain',
+        backgroundRepeat: 'repeat',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
+      {/* Optional overlay for better text readability */}
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-blue-800/20"></div>
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Main Footer Content */}
         <div className="py-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

@@ -1,0 +1,11 @@
+[
+  {
+    "name": "Test Clean Import",
+    "batchNo": "CLEAN-001",
+    "visaType": "Employment",
+    "status": "Working",
+    "phone": "+971501234567",
+    "department": "Testing",
+    "company": "Test Company"
+  }
+]

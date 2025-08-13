@@ -37,8 +37,8 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, setCurrentPage }) 
               onClick={() => setCurrentPage('home')}
               className={`px-6 py-2 rounded-lg font-medium transition-all duration-200 ${
                 currentPage === 'home'
-                  ? 'bg-white text-blue-700 shadow-md transform scale-105'
-                  : 'text-blue-100 hover:text-white hover:bg-blue-700 hover:shadow-md'
+                  ? 'bg-red-800 text-blue-700 shadow-md transform scale-105'
+                  : 'text-dark hover:text-white hover:bg-blue-700 hover:shadow-md'
               }`}
             >
               🏠 Home
@@ -48,7 +48,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, setCurrentPage }) 
               className={`px-6 py-2 rounded-lg font-medium transition-all duration-200 ${
                 currentPage === 'allstaff'
                   ? 'bg-white text-blue-700 shadow-md transform scale-105'
-                  : 'text-blue-100 hover:text-white hover:bg-blue-700 hover:shadow-md'
+                  : 'text-dark hover:text-red-600 hover:bg-blue-700 hover:shadow-md'
               }`}
             >
               👥 All Staff
@@ -58,10 +58,10 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, setCurrentPage }) 
               className={`px-6 py-2 rounded-lg font-medium transition-all duration-200 ${
                 currentPage === 'vacation'
                   ? 'bg-white text-blue-700 shadow-md transform scale-105'
-                  : 'text-blue-100 hover:text-white hover:bg-blue-700 hover:shadow-md'
+                  : 'text-dark hover:text-white hover:bg-blue-700 hover:shadow-md'
               }`}
             >
-              🏖️ Vacation
+              🏖️ Vacationn
             </button>
           </div>
 

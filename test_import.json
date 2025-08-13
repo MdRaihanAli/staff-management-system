@@ -1,0 +1,15 @@
+{
+  "action": "import",
+  "ids": [],
+  "data": {
+    "staff": [
+      {
+        "name": "Test Import User",
+        "department": "IT",
+        "company": "Test Company",
+        "status": "Working",
+        "batchNo": "TEST001"
+      }
+    ]
+  }
+}

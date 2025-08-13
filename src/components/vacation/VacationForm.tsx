@@ -73,8 +73,15 @@ const VacationForm: React.FC<VacationFormProps> = ({ staff, onSubmit, onCancel, 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    console.log('📝 VacationForm: Form submitted')
+    console.log('📝 VacationForm: Current formData:', formData)
+    console.log('📝 VacationForm: editingVacation:', editingVacation)
+    
     if (validateForm()) {
+      console.log('✅ VacationForm: Form validation passed, calling onSubmit')
       onSubmit(formData)
+    } else {
+      console.log('❌ VacationForm: Form validation failed')
     }
   }
 
@@ -284,7 +291,7 @@ const VacationForm: React.FC<VacationFormProps> = ({ staff, onSubmit, onCancel, 
             </button>
             <button
               type="submit"
-              className="flex-1 px-3 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="flex-1 px-3 py-2 text-sm bg-blue-600 text-dark rounded hover:bg-blue-700"
             >
               {editingVacation ? 'Update' : 'Create'}
             </button>

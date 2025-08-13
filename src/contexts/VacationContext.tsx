@@ -61,20 +61,22 @@ export const VacationProvider: React.FC<VacationProviderProps> = ({ children }) 
 
   const updateVacationRequest = async (id: number, updates: Partial<VacationRequest>) => {
     try {
-      console.log(`🔄 Updating vacation request ${id} in MongoDB...`, updates)
+      console.log(`🔄 VacationContext: Updating vacation request ${id} in MongoDB...`, updates)
       const updatedVacation = await StaffAPI.updateVacation(id.toString(), updates)
-      console.log('✅ Vacation request updated in MongoDB:', updatedVacation)
+      console.log('✅ VacationContext: Vacation request updated in MongoDB:', updatedVacation)
       
       // Update local state
-      setVacations(prev => 
-        prev.map(vacation => 
+      setVacations(prev => {
+        const newVacations = prev.map(vacation => 
           vacation.id === id 
             ? { ...vacation, ...updatedVacation }
             : vacation
         )
-      )
+        console.log('📋 VacationContext: Updated local state, new vacation count:', newVacations.length)
+        return newVacations
+      })
     } catch (error) {
-      console.error('❌ Error updating vacation request:', error)
+      console.error('❌ VacationContext: Error updating vacation request:', error)
       throw error
     }
   }
