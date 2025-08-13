@@ -7,7 +7,7 @@ import type { VacationRequest, VacationFilters, NewVacationRequest } from '../..
 
 const VacationPage: React.FC = () => {
   const { staff } = useStaff()
-  const { vacations, addVacationRequest, updateVacationRequest, deleteVacationRequest, getVacationStats } = useVacations()
+  const { vacations, loading, addVacationRequest, updateVacationRequest, deleteVacationRequest, getVacationStats } = useVacations()
   
   const [showForm, setShowForm] = useState(false)
   const [editingVacation, setEditingVacation] = useState<VacationRequest | null>(null)
@@ -56,7 +56,7 @@ const VacationPage: React.FC = () => {
     return matchesStatus && matchesStaffName && matchesHotel && matchesDateRange
   })
 
-  const handleCreateVacation = (newVacation: NewVacationRequest) => {
+  const handleCreateVacation = async (newVacation: NewVacationRequest) => {
     console.log('handleCreateVacation called with:', newVacation)
     
     const staffMember = staff.find(s => s.id === newVacation.staffId)
@@ -82,9 +82,15 @@ const VacationPage: React.FC = () => {
       status: 'Pending'
     }
 
-    console.log('Creating vacation with data:', vacation)
-    addVacationRequest(vacation)
-    setShowForm(false)
+    try {
+      console.log('Creating vacation with data:', vacation)
+      await addVacationRequest(vacation)
+      setShowForm(false)
+      console.log('✅ Vacation request created successfully')
+    } catch (error) {
+      console.error('❌ Error creating vacation request:', error)
+      alert('Failed to create vacation request. Please try again.')
+    }
   }
 
   const handleEditVacation = (vacation: VacationRequest) => {
@@ -92,7 +98,7 @@ const VacationPage: React.FC = () => {
     setShowForm(true)
   }
 
-  const handleUpdateVacation = (updatedVacation: NewVacationRequest) => {
+  const handleUpdateVacation = async (updatedVacation: NewVacationRequest) => {
     if (!editingVacation) return
 
     const staffMember = staff.find(s => s.id === updatedVacation.staffId)
@@ -112,18 +118,30 @@ const VacationPage: React.FC = () => {
       totalDays: calculateDays(updatedVacation.startDate, updatedVacation.endDate)
     }
 
-    updateVacationRequest(editingVacation.id, updates)
-    setShowForm(false)
-    setEditingVacation(null)
-  }
-
-  const handleDeleteVacation = (id: number) => {
-    if (confirm('Are you sure you want to delete this vacation request?')) {
-      deleteVacationRequest(id)
+    try {
+      await updateVacationRequest(editingVacation.id, updates)
+      setShowForm(false)
+      setEditingVacation(null)
+      console.log('✅ Vacation request updated successfully')
+    } catch (error) {
+      console.error('❌ Error updating vacation request:', error)
+      alert('Failed to update vacation request. Please try again.')
     }
   }
 
-  const handleUpdateStatus = (id: number, status: VacationRequest['status'], notes?: string) => {
+  const handleDeleteVacation = async (id: number) => {
+    if (confirm('Are you sure you want to delete this vacation request?')) {
+      try {
+        await deleteVacationRequest(id)
+        console.log('✅ Vacation request deleted successfully')
+      } catch (error) {
+        console.error('❌ Error deleting vacation request:', error)
+        alert('Failed to delete vacation request. Please try again.')
+      }
+    }
+  }
+
+  const handleUpdateStatus = async (id: number, status: VacationRequest['status'], notes?: string) => {
     const updates: Partial<VacationRequest> = {
       status,
       ...(status === 'Approved' && {
@@ -141,7 +159,13 @@ const VacationPage: React.FC = () => {
       })
     }
 
-    updateVacationRequest(id, updates)
+    try {
+      await updateVacationRequest(id, updates)
+      console.log('✅ Vacation status updated successfully')
+    } catch (error) {
+      console.error('❌ Error updating vacation status:', error)
+      alert('Failed to update vacation status. Please try again.')
+    }
   }
 
   const clearFilters = () => {

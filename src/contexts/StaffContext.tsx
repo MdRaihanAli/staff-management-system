@@ -107,8 +107,11 @@ export const StaffProvider: React.FC<StaffProviderProps> = ({ children }) => {
   // Function to update staff member in MongoDB
   const updateStaffInAPI = async (id: string, staffData: any) => {
     try {
+      console.log('🌐 API Call: Updating staff with ID:', id)
+      console.log('📤 Data being sent to API:', staffData)
       const updatedStaff = await StaffAPI.updateStaff(id, staffData)
       console.log('✅ Staff member updated in MongoDB')
+      console.log('📥 Response from API:', updatedStaff)
       
       // Reload all staff data to ensure consistency
       const refreshedStaffData = await StaffAPI.getAllStaff()
@@ -118,6 +121,8 @@ export const StaffProvider: React.FC<StaffProviderProps> = ({ children }) => {
       return updatedStaff
     } catch (error) {
       console.error('❌ Error updating staff in MongoDB:', error)
+      console.error('🆔 Failed ID:', id)
+      console.error('📋 Failed data:', staffData)
       throw error
     }
   }
@@ -125,6 +130,7 @@ export const StaffProvider: React.FC<StaffProviderProps> = ({ children }) => {
   // Function to delete staff member from MongoDB
   const deleteStaffFromAPI = async (id: string) => {
     try {
+      console.log('🌐 API Call: Deleting staff with ID:', id)
       await StaffAPI.deleteStaff(id)
       console.log('✅ Staff member deleted from MongoDB')
       
@@ -134,6 +140,7 @@ export const StaffProvider: React.FC<StaffProviderProps> = ({ children }) => {
       setStaff(refreshedStaffData || [])
     } catch (error) {
       console.error('❌ Error deleting staff from MongoDB:', error)
+      console.error('🆔 Failed delete ID:', id)
       throw error
     }
   }
@@ -157,10 +164,12 @@ export const StaffProvider: React.FC<StaffProviderProps> = ({ children }) => {
   const bulkUpdateHotelInAPI = async (ids: string[], hotel: string) => {
     try {
       await StaffAPI.bulkUpdateHotel(ids, hotel)
-      setStaff(prev => prev.map(s => 
-        ids.includes(s._id || '') ? { ...s, hotel } : s
-      ))
       console.log('✅ Bulk hotel update completed in MongoDB')
+      
+      // Reload all staff data to ensure consistency
+      const refreshedStaffData = await StaffAPI.getAllStaff()
+      console.log('🔄 Refreshing staff list after bulk hotel update, found:', refreshedStaffData?.length || 0, 'staff members')
+      setStaff(refreshedStaffData || [])
     } catch (error) {
       console.error('❌ Error in bulk hotel update:', error)
       throw error
@@ -170,10 +179,12 @@ export const StaffProvider: React.FC<StaffProviderProps> = ({ children }) => {
   const bulkUpdateStatusInAPI = async (ids: string[], status: string) => {
     try {
       await StaffAPI.bulkUpdateStatus(ids, status)
-      setStaff(prev => prev.map(s => 
-        ids.includes(s._id || '') ? { ...s, status: status as any } : s
-      ))
       console.log('✅ Bulk status update completed in MongoDB')
+      
+      // Reload all staff data to ensure consistency
+      const refreshedStaffData = await StaffAPI.getAllStaff()
+      console.log('🔄 Refreshing staff list after bulk status update, found:', refreshedStaffData?.length || 0, 'staff members')
+      setStaff(refreshedStaffData || [])
     } catch (error) {
       console.error('❌ Error in bulk status update:', error)
       throw error

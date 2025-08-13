@@ -5,6 +5,7 @@ import { useStaffOperations } from '../../hooks/useStaffOperations'
 import { filterStaff } from '../../utils/staffUtils'
 import { exportToWord, exportToJSON, importFromJSON, importFromExcel } from '../../utils/exportImport'
 import type { SearchFilters as SearchFiltersType, NewStaff } from '../../types/staff'
+import { useConfirmDialog } from '../../components/ConfirmDialog'
 
 // Import components
 import StaffHeader from '../../components/staff/StaffHeader'
@@ -12,6 +13,7 @@ import DataManagement from '../../components/staff/DataManagement'
 import SearchFilters from '../../components/staff/SearchFilters'
 import StaffList from '../../components/staff/StaffList'
 import StaffForm from '../../components/staff/StaffForm'
+import DebugStaffData from '../../components/DebugStaffData'
 
 const AllStaffPage: React.FC = () => {
   const { 
@@ -31,6 +33,7 @@ const AllStaffPage: React.FC = () => {
     deleteDepartmentFromAPI
   } = useStaff()
   const { batchError, setBatchError, addStaff, editStaff, deleteStaff } = useStaffOperations()
+  const { ConfirmDialogComponent } = useConfirmDialog()
   
   // State management
   const [showAddForm, setShowAddForm] = useState(false)
@@ -1244,6 +1247,9 @@ const AllStaffPage: React.FC = () => {
           </div>
         </div>
       )}
+      
+      {/* Confirm Dialog Component */}
+      {ConfirmDialogComponent}
       </div>
     </div>
   )

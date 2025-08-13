@@ -6,7 +6,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // MongoDB configuration
-const MONGODB_URI = process.env.MONGODB_UR || 'mongodb://localhost:27017';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017';
 const DATABASE_NAME = 'staff_management';
 
 let db;
@@ -217,11 +217,23 @@ app.put('/api/staff/:id', async (req, res) => {
     const { id } = req.params;
     const updateData = req.body;
     
+    console.log('🔄 PUT Request - ID received:', id);
+    console.log('🔄 PUT Request - Update data:', JSON.stringify(updateData, null, 2));
+    
     let query;
     if (ObjectId.isValid(id)) {
       query = { _id: new ObjectId(id) };
+      console.log('✅ Using ObjectId query:', query);
     } else {
       query = { id: parseInt(id) };
+      console.log('✅ Using numeric ID query:', query);
+    }
+    
+    // Check if document exists first
+    const existingDoc = await db.collection('staff').findOne(query);
+    console.log('🔍 Existing document found:', existingDoc ? 'YES' : 'NO');
+    if (existingDoc) {
+      console.log('📄 Existing document:', JSON.stringify(existingDoc, null, 2));
     }
     
     // Remove _id from update data to avoid conflicts
@@ -234,13 +246,20 @@ app.put('/api/staff/:id', async (req, res) => {
       { returnDocument: 'after' }
     );
     
-    if (!result.value) {
+    console.log('📊 Update result:', result);
+    
+    // Check both result and result.value for compatibility
+    const updatedDocument = result.value || result;
+    
+    if (!updatedDocument) {
+      console.log('❌ No document found to update');
       return sendError(res, 'Staff member not found', 404);
     }
     
     console.log(`✅ Staff member updated: ${id}`);
-    sendResponse(res, transformStaffDocument(result.value), 'Staff member updated successfully');
+    sendResponse(res, transformStaffDocument(updatedDocument), 'Staff member updated successfully');
   } catch (error) {
+    console.error('❌ PUT Error:', error);
     sendError(res, error);
   }
 });
@@ -527,6 +546,129 @@ app.get('/api/stats', async (req, res) => {
   }
 });
 
+// VACATION MANAGEMENT ENDPOINTS
+
+// Get all vacations
+app.get('/api/vacations', async (req, res) => {
+  try {
+    const vacations = await db.collection('vacations').find({}).toArray();
+    console.log(`📋 Fetching ${vacations.length} vacation requests`);
+    sendResponse(res, vacations);
+  } catch (error) {
+    sendError(res, error);
+  }
+});
+
+// Create vacation request
+app.post('/api/vacations', async (req, res) => {
+  try {
+    const vacationData = req.body;
+    
+    // Generate ID
+    const existingVacations = await db.collection('vacations').find({}).toArray();
+    const maxId = existingVacations.length > 0 ? Math.max(...existingVacations.map(v => v.id || 0)) : 0;
+    
+    const vacation = {
+      ...vacationData,
+      id: maxId + 1,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    
+    const result = await db.collection('vacations').insertOne(vacation);
+    vacation._id = result.insertedId;
+    
+    console.log(`✅ Vacation request created: ${vacation.id} for ${vacation.staffName}`);
+    sendResponse(res, vacation, 'Vacation request created successfully');
+  } catch (error) {
+    sendError(res, error);
+  }
+});
+
+// Update vacation request
+app.put('/api/vacations/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+    
+    // Add updatedAt timestamp
+    updateData.updatedAt = new Date().toISOString();
+    
+    let query;
+    if (ObjectId.isValid(id)) {
+      query = { _id: new ObjectId(id) };
+    } else {
+      query = { id: parseInt(id) };
+    }
+    
+    const result = await db.collection('vacations').findOneAndUpdate(
+      query,
+      { $set: updateData },
+      { returnDocument: 'after' }
+    );
+    
+    const updatedDocument = result.value || result;
+    
+    if (!updatedDocument) {
+      return sendError(res, 'Vacation request not found', 404);
+    }
+    
+    console.log(`✅ Vacation request updated: ${id}`);
+    sendResponse(res, updatedDocument, 'Vacation request updated successfully');
+  } catch (error) {
+    sendError(res, error);
+  }
+});
+
+// Delete vacation request
+app.delete('/api/vacations/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    let query;
+    if (ObjectId.isValid(id)) {
+      query = { _id: new ObjectId(id) };
+    } else {
+      query = { id: parseInt(id) };
+    }
+    
+    const result = await db.collection('vacations').deleteOne(query);
+    
+    if (result.deletedCount === 0) {
+      return sendError(res, 'Vacation request not found', 404);
+    }
+    
+    console.log(`✅ Vacation request deleted: ${id}`);
+    sendResponse(res, { deletedCount: result.deletedCount }, 'Vacation request deleted successfully');
+  } catch (error) {
+    sendError(res, error);
+  }
+});
+
+// Get vacation statistics
+app.get('/api/vacations/stats', async (req, res) => {
+  try {
+    const vacations = await db.collection('vacations').find({}).toArray();
+    
+    const stats = {
+      totalRequests: vacations.length,
+      pendingRequests: vacations.filter(v => v.status === 'Pending').length,
+      approvedRequests: vacations.filter(v => v.status === 'Approved').length,
+      ongoingVacations: vacations.filter(v => v.status === 'Ongoing').length,
+      completedVacations: vacations.filter(v => v.status === 'Completed').length,
+      rejectedRequests: vacations.filter(v => v.status === 'Rejected').length,
+      totalDaysRequested: vacations.reduce((sum, v) => sum + (v.totalDays || 0), 0),
+      totalSalaryHeld: vacations.reduce((sum, v) => sum + (v.salaryHold || 0), 0),
+      totalAdvanceGiven: vacations.reduce((sum, v) => sum + (v.salaryAdvance || 0), 0)
+    };
+    
+    console.log('📊 Vacation statistics calculated');
+    sendResponse(res, stats);
+  } catch (error) {
+    sendError(res, error);
+  }
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
@@ -569,6 +711,11 @@ async function startServer() {
       console.log('   GET    /api/hotels - Get hotels');
       console.log('   GET    /api/companies - Get companies');
       console.log('   GET    /api/departments - Get departments');
+      console.log('   GET    /api/vacations - Get all vacations');
+      console.log('   POST   /api/vacations - Create vacation request');
+      console.log('   PUT    /api/vacations/:id - Update vacation request');
+      console.log('   DELETE /api/vacations/:id - Delete vacation request');
+      console.log('   GET    /api/vacations/stats - Get vacation statistics');
       console.log('   GET    /api/stats - Get statistics');
       console.log('\n✅ Ready to accept connections!');
     });

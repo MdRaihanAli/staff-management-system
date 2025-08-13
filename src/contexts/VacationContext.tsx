@@ -1,14 +1,17 @@
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useState, useEffect } from 'react'
 import type { ReactNode } from 'react'
 import type { VacationRequest, VacationStats } from '../types/vacation'
+import StaffAPI from '../services/api'
 
 interface VacationContextType {
   vacations: VacationRequest[]
+  loading: boolean
   setVacations: React.Dispatch<React.SetStateAction<VacationRequest[]>>
-  addVacationRequest: (vacation: Omit<VacationRequest, 'id' | 'createdAt' | 'updatedAt'>) => void
-  updateVacationRequest: (id: number, updates: Partial<VacationRequest>) => void
-  deleteVacationRequest: (id: number) => void
+  addVacationRequest: (vacation: Omit<VacationRequest, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>
+  updateVacationRequest: (id: number, updates: Partial<VacationRequest>) => Promise<void>
+  deleteVacationRequest: (id: number) => Promise<void>
   getVacationStats: () => VacationStats
+  loadVacations: () => Promise<void>
 }
 
 const VacationContext = createContext<VacationContextType | undefined>(undefined)
@@ -19,37 +22,75 @@ interface VacationProviderProps {
 
 export const VacationProvider: React.FC<VacationProviderProps> = ({ children }) => {
   const [vacations, setVacations] = useState<VacationRequest[]>([])
+  const [loading, setLoading] = useState(false)
 
-  const addVacationRequest = (vacation: Omit<VacationRequest, 'id' | 'createdAt' | 'updatedAt'>) => {
-    console.log('VacationContext: addVacationRequest called with:', vacation)
-    
-    const newVacation: VacationRequest = {
-      ...vacation,
-      id: Math.max(...vacations.map(v => v.id), 0) + 1,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+  // Load vacations from MongoDB on component mount
+  useEffect(() => {
+    loadVacations()
+  }, [])
+
+  const loadVacations = async () => {
+    try {
+      setLoading(true)
+      console.log('📋 Loading vacations from MongoDB...')
+      const vacationData = await StaffAPI.getAllVacations()
+      setVacations(vacationData)
+      console.log(`✅ Loaded ${vacationData.length} vacation requests from MongoDB`)
+    } catch (error) {
+      console.error('❌ Error loading vacations:', error)
+      // Keep empty array on error
+      setVacations([])
+    } finally {
+      setLoading(false)
     }
-    
-    console.log('VacationContext: Creating new vacation:', newVacation)
-    setVacations(prev => {
-      const updated = [...prev, newVacation]
-      console.log('VacationContext: Updated vacations list:', updated)
-      return updated
-    })
   }
 
-  const updateVacationRequest = (id: number, updates: Partial<VacationRequest>) => {
-    setVacations(prev => 
-      prev.map(vacation => 
-        vacation.id === id 
-          ? { ...vacation, ...updates, updatedAt: new Date().toISOString() }
-          : vacation
+  const addVacationRequest = async (vacation: Omit<VacationRequest, 'id' | 'createdAt' | 'updatedAt'>) => {
+    try {
+      console.log('VacationContext: Creating vacation request in MongoDB...', vacation)
+      const newVacation = await StaffAPI.createVacation(vacation)
+      console.log('✅ Vacation request created in MongoDB:', newVacation)
+      
+      // Add to local state
+      setVacations(prev => [...prev, newVacation])
+    } catch (error) {
+      console.error('❌ Error creating vacation request:', error)
+      throw error
+    }
+  }
+
+  const updateVacationRequest = async (id: number, updates: Partial<VacationRequest>) => {
+    try {
+      console.log(`🔄 Updating vacation request ${id} in MongoDB...`, updates)
+      const updatedVacation = await StaffAPI.updateVacation(id.toString(), updates)
+      console.log('✅ Vacation request updated in MongoDB:', updatedVacation)
+      
+      // Update local state
+      setVacations(prev => 
+        prev.map(vacation => 
+          vacation.id === id 
+            ? { ...vacation, ...updatedVacation }
+            : vacation
+        )
       )
-    )
+    } catch (error) {
+      console.error('❌ Error updating vacation request:', error)
+      throw error
+    }
   }
 
-  const deleteVacationRequest = (id: number) => {
-    setVacations(prev => prev.filter(vacation => vacation.id !== id))
+  const deleteVacationRequest = async (id: number) => {
+    try {
+      console.log(`🗑️ Deleting vacation request ${id} from MongoDB...`)
+      await StaffAPI.deleteVacation(id.toString())
+      console.log('✅ Vacation request deleted from MongoDB')
+      
+      // Remove from local state
+      setVacations(prev => prev.filter(vacation => vacation.id !== id))
+    } catch (error) {
+      console.error('❌ Error deleting vacation request:', error)
+      throw error
+    }
   }
 
   const getVacationStats = (): VacationStats => {
@@ -78,11 +119,13 @@ export const VacationProvider: React.FC<VacationProviderProps> = ({ children }) 
 
   const value: VacationContextType = {
     vacations,
+    loading,
     setVacations,
     addVacationRequest,
     updateVacationRequest,
     deleteVacationRequest,
-    getVacationStats
+    getVacationStats,
+    loadVacations
   }
 
   return (

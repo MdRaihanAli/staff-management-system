@@ -341,31 +341,36 @@ const StaffList: React.FC<StaffListProps> = ({
                   <div className="col-span-1 flex flex-col space-y-2">
                     <button
                       onClick={() => onViewStaff(person)}
-                      className="w-11 h-11 bg-gradient-to-br from-slate-500 to-slate-600 text-white rounded-xl hover:from-slate-600 hover:to-slate-700 transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-105"
+                      className="w-full px-3 py-2 bg-gradient-to-br from-indigo-500 to-indigo-600 text-white rounded-xl hover:from-indigo-600 hover:to-indigo-700 transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transform hover:scale-105"
                       title="View Details"
                     >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
+                      <span className="text-xs font-semibold">View</span>
                     </button>
                     <button
                       onClick={() => onEditStaff(person)}
-                      className="w-11 h-11 bg-gradient-to-br from-emerald-500 to-emerald-600 text-white rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-105"
+                      className="w-full px-3 py-2 bg-gradient-to-br from-emerald-500 to-emerald-600 text-white rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transform hover:scale-105"
                       title="Edit Staff"
                     >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                       </svg>
+                      <span className="text-xs font-semibold">Edit</span>
                     </button>
                     <button
-                      onClick={() => onDeleteStaff(person._id || person.id)}
-                      className="w-11 h-11 bg-gradient-to-br from-red-500 to-red-600 text-white rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-105"
+                      onClick={() => {
+                        console.log('🔴 DELETE BUTTON CLICKED for staff:', person.name, 'ID:', person.id || person._id)
+                        onDeleteStaff(person._id || person.id)
+                      }}
+                      className="w-full px-3 py-2 bg-gradient-to-br from-red-500 to-red-600 text-white rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transform hover:scale-105"
                       title="Delete Staff"
                     >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                       </svg>
+                      <span className="text-xs font-semibold">Delete</span>
                     </button>
                   </div>
                 </div>
@@ -468,11 +473,10 @@ const StaffList: React.FC<StaffListProps> = ({
                   <div className="flex space-x-1">
                     <button
                       onClick={() => onViewStaff(person)}
-                      className="flex-1 px-2 py-1.5 bg-gradient-to-r from-slate-500 to-slate-600 text-white rounded-md text-xs font-semibold flex items-center justify-center space-x-1 hover:from-slate-600 hover:to-slate-700 transition-all"
+                      className="flex-1 px-2 py-1.5 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white rounded-md text-xs font-semibold flex items-center justify-center space-x-1 hover:from-indigo-600 hover:to-indigo-700 transition-all"
                     >
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
                       <span>View</span>
                     </button>
@@ -481,12 +485,15 @@ const StaffList: React.FC<StaffListProps> = ({
                       className="flex-1 px-2 py-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-md text-xs font-semibold flex items-center justify-center space-x-1 hover:from-emerald-600 hover:to-emerald-700 transition-all"
                     >
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                       </svg>
                       <span>Edit</span>
                     </button>
                     <button
-                      onClick={() => onDeleteStaff(person._id || person.id)}
+                      onClick={() => {
+                        console.log('🔴 MOBILE DELETE BUTTON CLICKED for staff:', person.name, 'ID:', person.id || person._id)
+                        onDeleteStaff(person._id || person.id)
+                      }}
                       className="flex-1 px-2 py-1.5 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-md text-xs font-semibold flex items-center justify-center space-x-1 hover:from-red-600 hover:to-red-700 transition-all"
                     >
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

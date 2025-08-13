@@ -160,6 +160,52 @@ class StaffAPI {
     if (!response.ok) throw new Error('API health check failed');
     return response.json();
   }
+
+  // Vacation API calls
+  static async getAllVacations() {
+    const response = await fetch(`${API_BASE_URL}/vacations`);
+    if (!response.ok) throw new Error('Failed to fetch vacations');
+    const result = await response.json();
+    return result.data || result;
+  }
+
+  static async createVacation(vacationData: any) {
+    const response = await fetch(`${API_BASE_URL}/vacations`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(vacationData)
+    });
+    if (!response.ok) throw new Error('Failed to create vacation request');
+    const result = await response.json();
+    return result.data || result;
+  }
+
+  static async updateVacation(id: string, vacationData: any) {
+    const response = await fetch(`${API_BASE_URL}/vacations/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(vacationData)
+    });
+    if (!response.ok) throw new Error('Failed to update vacation request');
+    const result = await response.json();
+    return result.data || result;
+  }
+
+  static async deleteVacation(id: string) {
+    const response = await fetch(`${API_BASE_URL}/vacations/${id}`, {
+      method: 'DELETE'
+    });
+    if (!response.ok) throw new Error('Failed to delete vacation request');
+    const result = await response.json();
+    return result.data || result;
+  }
+
+  static async getVacationStats() {
+    const response = await fetch(`${API_BASE_URL}/vacations/stats`);
+    if (!response.ok) throw new Error('Failed to fetch vacation statistics');
+    const result = await response.json();
+    return result.data || result;
+  }
 }
 
 export default StaffAPI;
