@@ -1,4 +1,26 @@
-const API_BASE_URL = 'http://localhost:3000/api';
+// Environment-aware API configuration
+const getApiBaseUrl = () => {
+  // Check for environment variable first
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  
+  // Fallback logic
+  if (import.meta.env.PROD) {
+    // Production fallback - your actual Render URL
+    return 'https://staff-management-api-hzq0.onrender.com/api';
+  }
+  
+  // Development default
+  return 'http://localhost:3000/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
+
+// Log the API URL in development for debugging
+if (import.meta.env.DEV) {
+  console.log('🔗 API Base URL:', API_BASE_URL);
+}
 
 class StaffAPI {
   // Staff API calls
