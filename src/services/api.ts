@@ -23,7 +23,8 @@ class StaffAPI {
       body: JSON.stringify(staffData)
     });
     if (!response.ok) throw new Error('Failed to create staff member');
-    return response.json();
+    const result = await response.json();
+    return result.data || result;
   }
 
   static async updateStaff(id: string, staffData: any) {
@@ -33,7 +34,8 @@ class StaffAPI {
       body: JSON.stringify(staffData)
     });
     if (!response.ok) throw new Error('Failed to update staff member');
-    return response.json();
+    const result = await response.json();
+    return result.data || result;
   }
 
   static async deleteStaff(id: string) {
@@ -41,7 +43,8 @@ class StaffAPI {
       method: 'DELETE'
     });
     if (!response.ok) throw new Error('Failed to delete staff member');
-    return response.json();
+    const result = await response.json();
+    return result.data || result;
   }
 
   static async bulkOperation(action: string, ids: string[], data?: any) {
@@ -51,7 +54,20 @@ class StaffAPI {
       body: JSON.stringify({ action, ids, data })
     });
     if (!response.ok) throw new Error('Failed to perform bulk operation');
-    return response.json();
+    const result = await response.json();
+    return result.data || result;
+  }
+
+  static async bulkDelete(ids: string[]) {
+    return this.bulkOperation('delete', ids);
+  }
+
+  static async bulkUpdateHotel(ids: string[], hotel: string) {
+    return this.bulkOperation('updateHotel', ids, { hotel });
+  }
+
+  static async bulkUpdateStatus(ids: string[], status: string) {
+    return this.bulkOperation('updateStatus', ids, { status });
   }
 
   // Hotels API calls
@@ -69,7 +85,8 @@ class StaffAPI {
       body: JSON.stringify({ name })
     });
     if (!response.ok) throw new Error('Failed to add hotel');
-    return response.json();
+    const result = await response.json();
+    return result.data || result;
   }
 
   static async deleteHotel(name: string) {
@@ -77,7 +94,8 @@ class StaffAPI {
       method: 'DELETE'
     });
     if (!response.ok) throw new Error('Failed to delete hotel');
-    return response.json();
+    const result = await response.json();
+    return result.data || result;
   }
 
   // Companies API calls
@@ -95,7 +113,8 @@ class StaffAPI {
       body: JSON.stringify({ name })
     });
     if (!response.ok) throw new Error('Failed to add company');
-    return response.json();
+    const result = await response.json();
+    return result.data || result;
   }
 
   static async deleteCompany(name: string) {
@@ -103,7 +122,8 @@ class StaffAPI {
       method: 'DELETE'
     });
     if (!response.ok) throw new Error('Failed to delete company');
-    return response.json();
+    const result = await response.json();
+    return result.data || result;
   }
 
   // Departments API calls
@@ -121,7 +141,8 @@ class StaffAPI {
       body: JSON.stringify({ name })
     });
     if (!response.ok) throw new Error('Failed to add department');
-    return response.json();
+    const result = await response.json();
+    return result.data || result;
   }
 
   static async deleteDepartment(name: string) {
@@ -129,7 +150,8 @@ class StaffAPI {
       method: 'DELETE'
     });
     if (!response.ok) throw new Error('Failed to delete department');
-    return response.json();
+    const result = await response.json();
+    return result.data || result;
   }
 
   // Health check

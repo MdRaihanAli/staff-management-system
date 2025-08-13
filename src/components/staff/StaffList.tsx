@@ -9,7 +9,7 @@ interface StaffListProps {
   onDeselectAll: () => void
   onViewStaff: (staff: Staff) => void
   onEditStaff: (staff: Staff) => void
-  onDeleteStaff: (id: number) => void
+  onDeleteStaff: (id: number | string) => void
 }
 
 const StaffList: React.FC<StaffListProps> = ({
@@ -359,7 +359,7 @@ const StaffList: React.FC<StaffListProps> = ({
                       </svg>
                     </button>
                     <button
-                      onClick={() => onDeleteStaff(person.id)}
+                      onClick={() => onDeleteStaff(person._id || person.id)}
                       className="w-11 h-11 bg-gradient-to-br from-red-500 to-red-600 text-white rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-105"
                       title="Delete Staff"
                     >
@@ -486,7 +486,7 @@ const StaffList: React.FC<StaffListProps> = ({
                       <span>Edit</span>
                     </button>
                     <button
-                      onClick={() => onDeleteStaff(person.id)}
+                      onClick={() => onDeleteStaff(person._id || person.id)}
                       className="flex-1 px-2 py-1.5 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-md text-xs font-semibold flex items-center justify-center space-x-1 hover:from-red-600 hover:to-red-700 transition-all"
                     >
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

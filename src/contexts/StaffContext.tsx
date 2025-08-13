@@ -30,8 +30,15 @@ export const StaffProvider: React.FC<StaffProviderProps> = ({ children }) => {
     const loadData = async () => {
       try {
         console.log('🔄 Loading data from external server API...')
+        console.log('🌐 API Base URL:', 'http://localhost:3000/api')
+        
+        // Test basic connectivity first
+        console.log('🧪 Testing basic connectivity...')
+        const testResponse = await fetch('http://localhost:3000/api/test')
+        console.log('✅ Test response status:', testResponse.status)
         
         // Load all data concurrently
+        console.log('📡 Loading data concurrently...')
         const [staffData, hotelsData, companiesData, departmentsData] = await Promise.all([
           StaffAPI.getAllStaff(),
           StaffAPI.getHotels(),
@@ -39,20 +46,33 @@ export const StaffProvider: React.FC<StaffProviderProps> = ({ children }) => {
           StaffAPI.getDepartments()
         ])
         
-        setStaff(staffData)
-        setHotels(hotelsData)
-        setCompanies(companiesData)
-        setDepartments(departmentsData)
+        console.log('📊 Raw data received:')
+        console.log('- Staff:', staffData?.length || 0, 'records')
+        console.log('- Hotels:', hotelsData?.length || 0, 'items')
+        console.log('- Companies:', companiesData?.length || 0, 'items')
+        console.log('- Departments:', departmentsData?.length || 0, 'items')
+        
+        // Server already provides normalized data, no need to re-normalize
+        setStaff(staffData || [])
+        setHotels(hotelsData || [])
+        setCompanies(companiesData || [])
+        setDepartments(departmentsData || [])
         
         console.log('✅ Data loaded successfully from external server')
         setIsLoaded(true)
+        console.log('🎉 App is now loaded and ready!')
       } catch (error) {
         console.error('❌ Error loading data from API:', error)
+        console.error('🔍 Error details:', error instanceof Error ? error.message : 'Unknown error')
+        console.error('🌐 Network error? Check if server is running on localhost:3000')
+        
         // Fallback to default values if API fails
         setHotels(['Grand Plaza Hotel', 'Ocean View Resort', 'City Center Inn', 'Mountain Lodge', 'Beach Paradise Hotel'])
         setCompanies(['Hotel Management Corp', 'Resort Services Ltd', 'Hospitality Group Inc', 'Tourism Solutions', 'Guest Services Co', 'Accommodation Partners', 'Travel & Stay Inc'])
         setDepartments(['Front Desk Manager', 'Receptionist', 'Housekeeping Supervisor', 'Housekeeper', 'Chef', 'Waiter', 'Security Guard', 'Maintenance Worker', 'Lifeguard', 'Manager', 'Assistant Manager', 'Supervisor', 'Staff'])
+        setStaff([]) // Empty staff array for offline mode
         setIsLoaded(true)
+        console.log('🔧 Fallback mode activated - app should load now')
         alert('⚠️ Could not connect to external server. Using offline mode. Please ensure your server is running on localhost:3000')
       }
     }
@@ -70,8 +90,13 @@ export const StaffProvider: React.FC<StaffProviderProps> = ({ children }) => {
   const addStaffToAPI = async (staffData: any) => {
     try {
       const newStaff = await StaffAPI.createStaff(staffData)
-      setStaff(prev => [...prev, newStaff])
       console.log('✅ Staff member added to MongoDB')
+      
+      // Reload all staff data to ensure consistency
+      const refreshedStaffData = await StaffAPI.getAllStaff()
+      console.log('🔄 Refreshing staff list, found:', refreshedStaffData?.length || 0, 'staff members')
+      setStaff(refreshedStaffData || [])
+      
       return newStaff
     } catch (error) {
       console.error('❌ Error adding staff to MongoDB:', error)
@@ -83,8 +108,13 @@ export const StaffProvider: React.FC<StaffProviderProps> = ({ children }) => {
   const updateStaffInAPI = async (id: string, staffData: any) => {
     try {
       const updatedStaff = await StaffAPI.updateStaff(id, staffData)
-      setStaff(prev => prev.map(s => s._id === id ? updatedStaff : s))
       console.log('✅ Staff member updated in MongoDB')
+      
+      // Reload all staff data to ensure consistency
+      const refreshedStaffData = await StaffAPI.getAllStaff()
+      console.log('🔄 Refreshing staff list after update, found:', refreshedStaffData?.length || 0, 'staff members')
+      setStaff(refreshedStaffData || [])
+      
       return updatedStaff
     } catch (error) {
       console.error('❌ Error updating staff in MongoDB:', error)
@@ -96,10 +126,125 @@ export const StaffProvider: React.FC<StaffProviderProps> = ({ children }) => {
   const deleteStaffFromAPI = async (id: string) => {
     try {
       await StaffAPI.deleteStaff(id)
-      setStaff(prev => prev.filter(s => s._id !== id))
       console.log('✅ Staff member deleted from MongoDB')
+      
+      // Reload all staff data to ensure consistency
+      const refreshedStaffData = await StaffAPI.getAllStaff()
+      console.log('🔄 Refreshing staff list after delete, found:', refreshedStaffData?.length || 0, 'staff members')
+      setStaff(refreshedStaffData || [])
     } catch (error) {
       console.error('❌ Error deleting staff from MongoDB:', error)
+      throw error
+    }
+  }
+
+  // Bulk operations
+  const bulkDeleteFromAPI = async (ids: string[]) => {
+    try {
+      await StaffAPI.bulkDelete(ids)
+      console.log('✅ Bulk delete completed in MongoDB')
+      
+      // Reload all staff data to ensure consistency
+      const refreshedStaffData = await StaffAPI.getAllStaff()
+      console.log('🔄 Refreshing staff list after bulk delete, found:', refreshedStaffData?.length || 0, 'staff members')
+      setStaff(refreshedStaffData || [])
+    } catch (error) {
+      console.error('❌ Error in bulk delete:', error)
+      throw error
+    }
+  }
+
+  const bulkUpdateHotelInAPI = async (ids: string[], hotel: string) => {
+    try {
+      await StaffAPI.bulkUpdateHotel(ids, hotel)
+      setStaff(prev => prev.map(s => 
+        ids.includes(s._id || '') ? { ...s, hotel } : s
+      ))
+      console.log('✅ Bulk hotel update completed in MongoDB')
+    } catch (error) {
+      console.error('❌ Error in bulk hotel update:', error)
+      throw error
+    }
+  }
+
+  const bulkUpdateStatusInAPI = async (ids: string[], status: string) => {
+    try {
+      await StaffAPI.bulkUpdateStatus(ids, status)
+      setStaff(prev => prev.map(s => 
+        ids.includes(s._id || '') ? { ...s, status: status as any } : s
+      ))
+      console.log('✅ Bulk status update completed in MongoDB')
+    } catch (error) {
+      console.error('❌ Error in bulk status update:', error)
+      throw error
+    }
+  }
+
+  // Hotel management functions
+  const addHotelToAPI = async (name: string) => {
+    try {
+      await StaffAPI.addHotel(name)
+      setHotels(prev => [...prev, name])
+      console.log('✅ Hotel added to MongoDB')
+    } catch (error) {
+      console.error('❌ Error adding hotel:', error)
+      throw error
+    }
+  }
+
+  const deleteHotelFromAPI = async (name: string) => {
+    try {
+      await StaffAPI.deleteHotel(name)
+      setHotels(prev => prev.filter(h => h !== name))
+      console.log('✅ Hotel deleted from MongoDB')
+    } catch (error) {
+      console.error('❌ Error deleting hotel:', error)
+      throw error
+    }
+  }
+
+  // Company management functions
+  const addCompanyToAPI = async (name: string) => {
+    try {
+      await StaffAPI.addCompany(name)
+      setCompanies(prev => [...prev, name])
+      console.log('✅ Company added to MongoDB')
+    } catch (error) {
+      console.error('❌ Error adding company:', error)
+      throw error
+    }
+  }
+
+  const deleteCompanyFromAPI = async (name: string) => {
+    try {
+      await StaffAPI.deleteCompany(name)
+      setCompanies(prev => prev.filter(c => c !== name))
+      console.log('✅ Company deleted from MongoDB')
+    } catch (error) {
+      console.error('❌ Error deleting company:', error)
+      throw error
+    }
+  }
+
+  // Department management functions
+  const addDepartmentToAPI = async (name: string) => {
+    try {
+      await StaffAPI.addDepartment(name)
+      setDepartments(prev => [...prev, name])
+      console.log('✅ Department added to MongoDB')
+    } catch (error) {
+      console.error('❌ Error adding department:', error)
+      throw error
+    }
+  }
+
+  const deleteDepartmentFromAPI = async (name: string) => {
+    try {
+      await StaffAPI.deleteDepartment(name)
+      setDepartments(prev => prev.filter(d => d !== name))
+      console.log('✅ Department deleted from MongoDB')
+    } catch (error) {
+      console.error('❌ Error deleting department:', error)
       throw error
     }
   }
@@ -200,12 +345,29 @@ export const StaffProvider: React.FC<StaffProviderProps> = ({ children }) => {
     hasUnsavedChanges,
     addStaffToAPI,
     updateStaffInAPI,
-    deleteStaffFromAPI
+    deleteStaffFromAPI,
+    bulkDeleteFromAPI,
+    bulkUpdateHotelInAPI,
+    bulkUpdateStatusInAPI,
+    addHotelToAPI,
+    deleteHotelFromAPI,
+    addCompanyToAPI,
+    deleteCompanyFromAPI,
+    addDepartmentToAPI,
+    deleteDepartmentFromAPI
   }
 
   // Don't render children until data is loaded
   if (!isLoaded) {
-    return <div>Loading staff data...</div>
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-lg text-gray-700">Loading staff data...</p>
+          <p className="text-sm text-gray-500 mt-2">Connecting to MongoDB server on localhost:3000</p>
+        </div>
+      </div>
+    )
   }
 
   return (

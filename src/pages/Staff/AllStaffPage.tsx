@@ -14,7 +14,22 @@ import StaffList from '../../components/staff/StaffList'
 import StaffForm from '../../components/staff/StaffForm'
 
 const AllStaffPage: React.FC = () => {
-  const { staff, setStaff, hotels, setHotels, companies, setCompanies, departments, setDepartments } = useStaff()
+  const { 
+    staff, 
+    setStaff, 
+    hotels, 
+    companies, 
+    departments, 
+    bulkDeleteFromAPI, 
+    bulkUpdateHotelInAPI, 
+    bulkUpdateStatusInAPI,
+    addHotelToAPI,
+    deleteHotelFromAPI,
+    addCompanyToAPI,
+    deleteCompanyFromAPI,
+    addDepartmentToAPI,
+    deleteDepartmentFromAPI
+  } = useStaff()
   const { batchError, setBatchError, addStaff, editStaff, deleteStaff } = useStaffOperations()
   
   // State management
@@ -70,37 +85,67 @@ const AllStaffPage: React.FC = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10)
 
   // Helper functions
-  const addHotel = () => {
+  const addHotel = async () => {
     if (newHotel.trim() && !hotels.includes(newHotel.trim())) {
-      setHotels([...hotels, newHotel.trim()])
-      setNewHotel('')
+      try {
+        await addHotelToAPI(newHotel.trim())
+        setNewHotel('')
+      } catch (error) {
+        console.error('Error adding hotel:', error)
+        alert('Failed to add hotel. Please try again.')
+      }
     }
   }
 
-  const removeHotel = (hotelToRemove: string) => {
-    setHotels(hotels.filter(hotel => hotel !== hotelToRemove))
+  const removeHotel = async (hotelToRemove: string) => {
+    try {
+      await deleteHotelFromAPI(hotelToRemove)
+    } catch (error) {
+      console.error('Error removing hotel:', error)
+      alert('Failed to remove hotel. Please try again.')
+    }
   }
 
-  const addCompany = () => {
+  const addCompany = async () => {
     if (newCompany.trim() && !companies.includes(newCompany.trim())) {
-      setCompanies([...companies, newCompany.trim()])
-      setNewCompany('')
+      try {
+        await addCompanyToAPI(newCompany.trim())
+        setNewCompany('')
+      } catch (error) {
+        console.error('Error adding company:', error)
+        alert('Failed to add company. Please try again.')
+      }
     }
   }
 
-  const removeCompany = (companyToRemove: string) => {
-    setCompanies(companies.filter(company => company !== companyToRemove))
+  const removeCompany = async (companyToRemove: string) => {
+    try {
+      await deleteCompanyFromAPI(companyToRemove)
+    } catch (error) {
+      console.error('Error removing company:', error)
+      alert('Failed to remove company. Please try again.')
+    }
   }
 
-  const addDepartment = () => {
+  const addDepartment = async () => {
     if (newDepartment.trim() && !departments.includes(newDepartment.trim())) {
-      setDepartments([...departments, newDepartment.trim()])
-      setNewDepartment('')
+      try {
+        await addDepartmentToAPI(newDepartment.trim())
+        setNewDepartment('')
+      } catch (error) {
+        console.error('Error adding department:', error)
+        alert('Failed to add department. Please try again.')
+      }
     }
   }
 
-  const removeDepartment = (departmentToRemove: string) => {
-    setDepartments(departments.filter(department => department !== departmentToRemove))
+  const removeDepartment = async (departmentToRemove: string) => {
+    try {
+      await deleteDepartmentFromAPI(departmentToRemove)
+    } catch (error) {
+      console.error('Error removing department:', error)
+      alert('Failed to remove department. Please try again.')
+    }
   }
 
   // Helper functions to handle field updates with batch error clearing
@@ -204,8 +249,8 @@ const AllStaffPage: React.FC = () => {
   }, [searchTerm, filterVisa, filterHotel, filterCompany, filterDepartment, filterExpireDate, filterPassportExpireDate, showExitedStaff, searchFilters])
 
   // Staff operations
-  const handleAddStaff = () => {
-    if (addStaff(newStaff)) {
+  const handleAddStaff = async () => {
+    if (await addStaff(newStaff)) {
       setNewStaff({
         sl: 0,
         batchNo: '',
@@ -228,46 +273,56 @@ const AllStaffPage: React.FC = () => {
     }
   }
 
-  const handleEditStaff = (updatedStaff: any) => {
-    if (editStaff(updatedStaff)) {
+  const handleEditStaff = async (updatedStaff: any) => {
+    if (await editStaff(updatedStaff)) {
       setEditingStaff(null)
     }
     // If editStaff returns false, keep the modal open to show batch error
   }
 
   // Bulk operations
-  const handleBulkAction = () => {
+  const handleBulkAction = async () => {
     if (selectedStaff.length === 0) {
       alert('Please select staff members first.')
       return
     }
 
-    switch (bulkAction) {
-      case 'delete':
-        if (confirm(`Delete ${selectedStaff.length} selected staff members?`)) {
-          setStaff(staff.filter(s => !selectedStaff.includes(s.id)))
-          setSelectedStaff([])
-          alert(`Deleted ${selectedStaff.length} staff members.`)
-        }
-        break
-      case 'changeHotel':
-        if (bulkHotel) {
-          setStaff(staff.map(s => 
-            selectedStaff.includes(s.id) ? { ...s, hotel: bulkHotel } : s
-          ))
-          setSelectedStaff([])
-          alert(`Updated hotel for ${selectedStaff.length} staff members.`)
-        }
-        break
-      case 'changeStatus':
-        if (bulkStatus) {
-          setStaff(staff.map(s => 
-            selectedStaff.includes(s.id) ? { ...s, status: bulkStatus as any } : s
-          ))
-          setSelectedStaff([])
-          alert(`Updated status for ${selectedStaff.length} staff members.`)
-        }
-        break
+    try {
+      // Convert selectedStaff IDs to MongoDB _ids
+      const selectedStaffData = staff.filter(s => selectedStaff.includes(s.id))
+      const mongoIds = selectedStaffData.map(s => s._id || s.id.toString()).filter(id => id !== undefined)
+
+      if (mongoIds.length === 0) {
+        alert('No valid staff IDs found for the operation.')
+        return
+      }
+
+      switch (bulkAction) {
+        case 'delete':
+          if (confirm(`Delete ${selectedStaff.length} selected staff members?`)) {
+            await bulkDeleteFromAPI(mongoIds)
+            setSelectedStaff([])
+            alert(`Deleted ${selectedStaff.length} staff members.`)
+          }
+          break
+        case 'changeHotel':
+          if (bulkHotel) {
+            await bulkUpdateHotelInAPI(mongoIds, bulkHotel)
+            setSelectedStaff([])
+            alert(`Updated hotel for ${selectedStaff.length} staff members.`)
+          }
+          break
+        case 'changeStatus':
+          if (bulkStatus) {
+            await bulkUpdateStatusInAPI(mongoIds, bulkStatus)
+            setSelectedStaff([])
+            alert(`Updated status for ${selectedStaff.length} staff members.`)
+          }
+          break
+      }
+    } catch (error) {
+      console.error('Bulk operation failed:', error)
+      alert('Bulk operation failed. Please try again.')
     }
     setShowBulkActions(false)
   }
@@ -282,7 +337,9 @@ const AllStaffPage: React.FC = () => {
   }
 
   const selectAllStaff = () => {
-    setSelectedStaff(paginatedStaff.map(s => s.id))
+    // Make sure we only select IDs that exist on the current page
+    const validIds = paginatedStaff.map(s => s.id).filter(id => id !== undefined)
+    setSelectedStaff(validIds)
   }
 
   const deselectAllStaff = () => {
@@ -425,11 +482,18 @@ const AllStaffPage: React.FC = () => {
               </div>
               <div className="flex flex-wrap gap-2">
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     if (confirm(`Permanently delete ${selectedStaff.length} selected exited staff members?\n\nThis action cannot be undone.`)) {
-                      setStaff(staff.filter(s => !selectedStaff.includes(s.id)))
-                      setSelectedStaff([])
-                      alert(`Deleted ${selectedStaff.length} exited staff members.`)
+                      try {
+                        const selectedStaffData = staff.filter(s => selectedStaff.includes(s.id))
+                        const mongoIds = selectedStaffData.map(s => s._id || s.id.toString()).filter(id => id !== undefined)
+                        await bulkDeleteFromAPI(mongoIds)
+                        setSelectedStaff([])
+                        alert(`Deleted ${selectedStaff.length} exited staff members.`)
+                      } catch (error) {
+                        console.error('Bulk delete failed:', error)
+                        alert('Failed to delete staff members. Please try again.')
+                      }
                     }
                   }}
                   className="px-3 py-1 bg-red-500 text-white rounded text-xs font-medium hover:bg-red-600 transition-colors"
@@ -437,13 +501,18 @@ const AllStaffPage: React.FC = () => {
                   🗑️ Delete Selected
                 </button>
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     if (confirm(`Change ${selectedStaff.length} selected staff back to Working status?`)) {
-                      setStaff(staff.map(s => 
-                        selectedStaff.includes(s.id) ? { ...s, status: 'Working' as any } : s
-                      ))
-                      setSelectedStaff([])
-                      alert(`Changed ${selectedStaff.length} staff back to Working status.`)
+                      try {
+                        const selectedStaffData = staff.filter(s => selectedStaff.includes(s.id))
+                        const mongoIds = selectedStaffData.map(s => s._id || s.id.toString()).filter(id => id !== undefined)
+                        await bulkUpdateStatusInAPI(mongoIds, 'Working')
+                        setSelectedStaff([])
+                        alert(`Changed ${selectedStaff.length} staff back to Working status.`)
+                      } catch (error) {
+                        console.error('Bulk status update failed:', error)
+                        alert('Failed to update staff status. Please try again.')
+                      }
                     }
                   }}
                   className="px-3 py-1 bg-green-500 text-white rounded text-xs font-medium hover:bg-green-600 transition-colors"

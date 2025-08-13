@@ -105,6 +105,7 @@ const StaffForm: React.FC<StaffFormProps> = ({
                   onChange={(e) => onUpdate('status', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
+                  <option value="">📋 Select Status</option>
                   <option value="Working">✅ Working</option>
                   <option value="Jobless">❌ Jobless</option>
                   <option value="Exited">🚪 Exited</option>
